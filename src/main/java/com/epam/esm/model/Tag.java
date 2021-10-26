@@ -3,7 +3,6 @@ package com.epam.esm.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Component
 @Scope("prototype")
 @NoArgsConstructor
-public class Tag extends BaseEntity{
+public class Tag extends BaseEntity {
 
     @NotNull
     private String name;

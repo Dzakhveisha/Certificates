@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BaseEntity{
+public abstract class BaseEntity {
     private Long id;
 }

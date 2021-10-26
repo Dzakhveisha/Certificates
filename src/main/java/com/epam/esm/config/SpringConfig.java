@@ -18,7 +18,7 @@ import java.util.List;
 public class SpringConfig implements WebMvcConfigurer {
 
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters){
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter jacksonConverter =
                 new MappingJackson2HttpMessageConverter();
         jacksonConverter.setDefaultCharset(StandardCharsets.UTF_8);
@@ -26,11 +26,11 @@ public class SpringConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public ResourceBundleMessageSource getResourceBundleMessageSource(){
+    public ResourceBundleMessageSource getResourceBundleMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.addBasenames("/errorMessage");
         messageSource.setDefaultEncoding("UTF-8");
-        return  messageSource;
+        return messageSource;
     }
 
 }

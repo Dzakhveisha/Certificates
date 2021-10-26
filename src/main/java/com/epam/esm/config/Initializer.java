@@ -17,7 +17,7 @@ public class Initializer extends AbstractAnnotationConfigDispatcherServletInitia
     }
 
     @Override
-    protected DispatcherServlet createDispatcherServlet(WebApplicationContext servletAppContext){
+    protected DispatcherServlet createDispatcherServlet(WebApplicationContext servletAppContext) {
         DispatcherServlet dispatcherServlet = (DispatcherServlet) super.createDispatcherServlet(servletAppContext);
         dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
         return dispatcherServlet;

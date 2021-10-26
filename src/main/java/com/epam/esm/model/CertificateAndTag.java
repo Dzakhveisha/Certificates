@@ -9,7 +9,7 @@ import java.security.cert.Certificate;
 @Data
 @Component
 @Scope("prototype")
-public class CertificateAndTag{
+public class CertificateAndTag {
     private Certificate certificate;
     private Tag tag;
 

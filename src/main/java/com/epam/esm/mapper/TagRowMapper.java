@@ -14,11 +14,11 @@ public class TagRowMapper implements RowMapper<Tag> {
     private static final String TAG_NAME = "name";
 
     @Override
-        public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Tag tag = new Tag();
-            tag.setId(rs.getLong(TAG_ID));
-            tag.setName(rs.getString(TAG_NAME));
-            return tag;
-        }
+    public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Tag tag = new Tag();
+        tag.setId(rs.getLong(TAG_ID));
+        tag.setName(rs.getString(TAG_NAME));
+        return tag;
     }
+}
 

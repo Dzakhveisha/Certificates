@@ -1,6 +1,6 @@
 package com.epam.esm.exceptions;
 
-public class EntityNotFoundException extends Exception{
+public class EntityNotFoundException extends Exception {
     public EntityNotFoundException() {
     }
 

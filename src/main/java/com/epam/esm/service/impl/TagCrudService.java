@@ -17,7 +17,7 @@ public class TagCrudService implements CrudService<Tag> {
 
     @Override
     public Tag findById(Long id) throws TagNotFoundException {
-        return jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id) );
+        return jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id));
     }
 
     @Override

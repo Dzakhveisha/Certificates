@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -27,7 +26,7 @@ public class DBConfig {
 
     @Bean
     @Profile("prod")
-    public HikariDataSource HikariDataSource(){
+    public HikariDataSource HikariDataSource() {
         /*HikariConfig config = new HikariConfig("/db.properties");
         return new HikariDataSource(config);*/
 
