@@ -2,6 +2,7 @@ package com.epam.esm.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Component
 @Scope("prototype")
-public class GiftCertificate extends BaseEntity {
+@NoArgsConstructor
+
+public class Certificate extends BaseEntity {
     private String name;
     private String description;
     private long price;
@@ -22,7 +25,7 @@ public class GiftCertificate extends BaseEntity {
     private LocalDateTime lastUpdateDate;
     private List<Tag> tags;
 
-    public GiftCertificate(Long id, String name, String description, long price, Integer duration
+    public Certificate(Long id, String name, String description, long price, Integer duration
             , LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         super(id);
         this.name = name;
@@ -34,7 +37,7 @@ public class GiftCertificate extends BaseEntity {
         this.tags = new ArrayList<>();
     }
 
-    public GiftCertificate(Long id, String name, String description, long price, Integer duration
+    public Certificate(Long id, String name, String description, long price, Integer duration
             , LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
         super(id);
         this.name = name;
