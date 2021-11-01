@@ -1,16 +1,14 @@
 package com.epam.esm.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import java.security.cert.Certificate;
+import lombok.NoArgsConstructor;
 
 @Data
-@Component
-@Scope("prototype")
+@AllArgsConstructor
+@NoArgsConstructor
 public class CertificateAndTag {
-    private Certificate certificate;
-    private Tag tag;
+    private Long certificateId;
+    private Long tagId;
 
 }

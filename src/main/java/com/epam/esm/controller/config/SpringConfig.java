@@ -1,4 +1,4 @@
-package com.epam.esm.config;
+package com.epam.esm.controller.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,5 +32,4 @@ public class SpringConfig implements WebMvcConfigurer {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-
 }
