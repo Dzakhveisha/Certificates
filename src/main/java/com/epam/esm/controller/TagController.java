@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.model.Tag;
-import com.epam.esm.service.impl.TagServiceImpl;
+import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/v1/tags")
 public class TagController {
 
-    private final TagServiceImpl tagService;
+    private final TagService tagService;
 
     @GetMapping
     public List<Tag> getAllTags() {

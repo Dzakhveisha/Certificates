@@ -10,8 +10,10 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.CertificateNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CertificateServiceImpl implements CertificateService {
 
-    private final BaseDao<Certificate> certificateDao;
+    private final JdbcCertificateDaoImpl certificateDao;
     private final BaseDao<Tag> tagDao;
     private final JdbcCertificateAndTagDaoImpl certificateAndTagDao;
 
@@ -36,6 +38,7 @@ public class CertificateServiceImpl implements CertificateService {
         return certificates;
     }
 
+    @Transactional
     @Override
     public Certificate create(Certificate entity) {
         entity.setCreateDate(LocalDateTime.now());
@@ -44,6 +47,7 @@ public class CertificateServiceImpl implements CertificateService {
         return updateTags(entity.getTags(), certificateNew);
     }
 
+    @Transactional
     @Override
     public Certificate update(Long id, Certificate entity) {
         entity.setLastUpdateDate(LocalDateTime.now());
@@ -55,6 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
         return certificate;
     }
 
+    @Transactional
     @Override
     public boolean remove(Long id) {
         Optional<Certificate> deletedCertificate = certificateDao.getEntityById(id);
@@ -62,7 +67,18 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDao.removeEntity(id);
     }
 
+    @Override
+    public List<Certificate> sortAllWithCriteria(String sortBy, String order, String partName, String tagName) {
+        List<Certificate> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagName);
+        certificates.forEach((certificate) -> certificate = addTags(certificate));
+        return certificates;
+    }
+
     private Certificate updateTags(List<Tag> tags, Certificate certificate) {
+        if (tags == null) {
+            certificate.setTags(Collections.emptyList());
+            return certificate;
+        }
         for (Tag tag : tags) {
             if (!tagDao.getEntityById(tag.getId()).isPresent()) {
                 tagDao.createEntity(tag);

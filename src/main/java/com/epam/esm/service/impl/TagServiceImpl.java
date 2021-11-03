@@ -7,6 +7,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.TagNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,15 +33,11 @@ public class TagServiceImpl implements TagService {
         return jdbcTagDao.createEntity(entity);
     }
 
-
+    @Transactional
     @Override
     public void remove(Long id) {
-        deleteTagInCertificates(id);
-        jdbcTagDao.removeEntity(id);
-    }
-
-    private void deleteTagInCertificates(Long id) {
         final List<Long> certificateIds = certificateAndTagDao.listOfCertificatesIdByTags(id);
         certificateIds.forEach((certificateId) -> certificateAndTagDao.removeEntity(id, certificateId));
+        jdbcTagDao.removeEntity(id);
     }
 }

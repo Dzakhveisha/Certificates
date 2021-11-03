@@ -1,4 +1,4 @@
-package com.epam.esm.controller.exceptionHandler;
+package com.epam.esm.controller.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

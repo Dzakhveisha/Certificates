@@ -33,7 +33,7 @@ public class DBConfig {
 
     @Bean
     @Profile("prod")
-    public HikariDataSource HikariDataSource() {
+    public HikariDataSource hikariDataSource() {
         HikariConfig config = new HikariConfig();
         config.setUsername(dbUserName);
         config.setPassword(dbPassword);

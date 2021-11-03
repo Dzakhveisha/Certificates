@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -23,6 +24,11 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     private static final String CERT_LAST_UPDATE_DATE = "last_update_date";
 
     private static final String SQL_UPDATE = "UPDATE %s SET %s WHERE id = ?";
+    private static final String SQL_ORDER_BY_DESC = " ORDER BY %s DESC";
+    private static final String SQL_ORDER_BY_ASC = " ORDER BY %s ASC";
+    private static final String SQL_WHERE_LIKE = " WHERE ((name LIKE '%%%s%%') OR ( description LIKE '%%%s%%')) AND (%s)";
+    private static final String SQL_WHERE_TAG_NAME = " EXISTS ( SELECT * FROM certificate_tag WHERE (certificate_id=id) AND (SELECT id FROM tags WHERE name = '%s'))";
+
 
     public JdbcCertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
         super(jdbcTemplate, rowMapper);
@@ -41,20 +47,40 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     }
 
     @Override
-    protected PreparedStatement prepareStatementForInsert(PreparedStatement ps, Certificate entity) throws SQLException {
-        ps.setString(1, entity.getName());
-        ps.setString(2, entity.getDescription());
-        ps.setLong(3, entity.getPrice());
-        ps.setInt(4, entity.getDuration());
-        ps.setTimestamp(5, Timestamp.valueOf(entity.getCreateDate()));
-        ps.setTimestamp(6, Timestamp.valueOf(entity.getCreateDate()));
-        return ps;
+    protected PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Certificate entity) throws SQLException {
+        preparedStatement.setString(1, entity.getName());
+        preparedStatement.setString(2, entity.getDescription());
+        preparedStatement.setLong(3, entity.getPrice());
+        preparedStatement.setInt(4, entity.getDuration());
+        preparedStatement.setTimestamp(5, Timestamp.valueOf(entity.getCreateDate()));
+        preparedStatement.setTimestamp(6, Timestamp.valueOf(entity.getCreateDate()));
+        return preparedStatement;
     }
 
     public Optional<Certificate> updateEntity(Long id, Certificate entity) {
         String SQL = String.format(SQL_UPDATE, getTableName(), getFieldsForUpdating(entity));
         jdbcTemplate.update(SQL, getValuesForUpdating(entity, id));
         return getEntityById(id);
+    }
+
+    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, String tagName) {
+        String SQL;
+        if (tagName != null) {
+            final String sqlWhereLikeWithTagName = String.format(SQL_WHERE_LIKE, partName, partName, String.format(SQL_WHERE_TAG_NAME, tagName));
+            if (order.equals("DESC")) {
+                SQL = SQL_SELECT + getTableName() + sqlWhereLikeWithTagName + String.format(SQL_ORDER_BY_DESC, sortBy);
+            } else {
+                SQL = SQL_SELECT + getTableName() + sqlWhereLikeWithTagName + String.format(SQL_ORDER_BY_ASC, sortBy);
+            }
+
+        } else {
+            if (order.equals("DESC")) {
+                SQL = SQL_SELECT + getTableName() + String.format(SQL_WHERE_LIKE, partName, partName, "TRUE") + String.format(SQL_ORDER_BY_DESC, sortBy);
+            } else {
+                SQL = SQL_SELECT + getTableName() + String.format(SQL_WHERE_LIKE, partName, partName, "TRUE") + String.format(SQL_ORDER_BY_ASC, sortBy);
+            }
+        }
+        return jdbcTemplate.query(SQL, rowMapper);
     }
 
     private Object[] getValuesForUpdating(Certificate entity, Long id) {

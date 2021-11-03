@@ -30,8 +30,8 @@ public class JdbcTagDaoImpl extends BaseDao<Tag> {
     }
 
     @Override
-    protected PreparedStatement prepareStatementForInsert(PreparedStatement ps, Tag entity) throws SQLException {
-        ps.setString(1, entity.getName());
-        return ps;
+    protected PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Tag entity) throws SQLException {
+        preparedStatement.setString(1, entity.getName());
+        return preparedStatement;
     }
 }

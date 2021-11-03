@@ -18,7 +18,7 @@ public abstract class BaseDao<T extends BaseEntity> {
 
     private static final String SQL_INSERT = "INSERT INTO ";
     private static final String SQL_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
-    private static final String SQL_SELECT = "SELECT * FROM ";
+    protected static final String SQL_SELECT = "SELECT * FROM ";
     private static final String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
 
     protected final JdbcTemplate jdbcTemplate;

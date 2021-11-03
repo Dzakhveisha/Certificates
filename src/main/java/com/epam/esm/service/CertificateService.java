@@ -16,4 +16,6 @@ public interface CertificateService {
     Certificate update(Long id, Certificate entity);
 
     boolean remove(Long id);
+
+    List<Certificate> sortAllWithCriteria(String sortBy, String order, String partName, String tagName);
 }
