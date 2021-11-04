@@ -35,7 +35,19 @@ public class Certificate extends BaseEntity {
 
     private List<Tag> tags;
 
+    public Certificate(Long id, @NotNull String name, @NotNull String description, @NotNull @PositiveOrZero Long price, @NotNull @Positive Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.tags = tags;
+    }
+
     public void addTag(Tag tag) {
         tags.add(tag);
     }
+
 }

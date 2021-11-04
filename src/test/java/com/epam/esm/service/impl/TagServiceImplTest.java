@@ -2,26 +2,18 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.impl.JdbcTagDaoImpl;
+import com.epam.esm.model.Certificate;
 import com.epam.esm.model.Tag;
-import com.epam.esm.service.TagService;
-import com.epam.esm.service.exception.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.esm.service.exception.TagNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,10 +27,25 @@ class TagServiceImplTest {
     @Mock
     private JdbcCertificateAndTagDaoImpl certificateAndTagDao;
 
+    private static final Tag[] TAGS = {
+            new Tag(1L, "tagName1"),
+            new Tag(2L, "tagName2"),
+            new Tag(3L, "tagName3")
+    };
+
+    private static final Certificate[] CERTIFICATES = {
+            new Certificate(1L, "certificate1", "description1", 105L, 10,
+                    LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>(Collections.singletonList(TAGS[0]))),
+            new Certificate(2L, "certificate2", "description2", 108L, 10,
+                    LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>(Collections.singletonList(TAGS[0]))),
+            new Certificate(3L, "certificate3", "description3", 138L, 10,
+                    LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>(Arrays.asList(TAGS[1], TAGS[2])))
+    };
+
+
     @Test
-    public void testGetByIdShouldReturnTagWhenTagInDb() {
-        Tag tag = new Tag("tagName");
-        tag.setId(1L);
+    void testFindByIdShouldReturnTagWithSuchId() {
+        Tag tag = TAGS[0];
         Mockito.when(tagDao.getEntityById(1L)).thenReturn(Optional.of(tag));
         final Tag actual = tagService.findById(1L);
         assertEquals(tag, actual);
@@ -46,19 +53,14 @@ class TagServiceImplTest {
     }
 
     @Test
-    void findByIdShouldThrowEntityNotFoundException() {
+    void testFindByIdShouldThrowTagNotFoundException() {
         Mockito.when(tagDao.getEntityById(199L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> tagService.findById(199L) );
+        assertThrows(TagNotFoundException.class, () -> tagService.findById(199L));
     }
 
     @Test
-    void findAllShouldReturnAllTagsIfDbIsNotEmpty(){
-        Tag tag1 = new Tag("tagName1");
-        tag1.setId(1L);
-        Tag tag2 = new Tag("tagName2");
-        tag2.setId(1L);
-        List<Tag> tags = Arrays.asList(tag1, tag2);
-
+    void testFindAllShouldReturnAllTagsIfDbIsNotEmpty() {
+        List<Tag> tags = Arrays.asList(TAGS[0], TAGS[1]);
         Mockito.when(tagDao.listOfEntities()).thenReturn(tags);
         final List<Tag> actual = tagService.findAll();
         assertEquals(tags, actual);
@@ -66,9 +68,8 @@ class TagServiceImplTest {
     }
 
     @Test
-    void findAllShouldReturnEmptyListIfDbIsEmpty(){
+    void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
         List<Tag> tags = Collections.emptyList();
-
         Mockito.when(tagDao.listOfEntities()).thenReturn(tags);
         final List<Tag> actual = tagService.findAll();
         assertEquals(tags, actual);
@@ -76,10 +77,9 @@ class TagServiceImplTest {
     }
 
     @Test
-    void createShouldReturnNewTag(){
-        Tag tag = new Tag("tagName");
-        Tag newTagInDb = new Tag("tagName");
-        newTagInDb.setId(1L);
+    void testCreateShouldReturnNewTag() {
+        Tag tag = new Tag(TAGS[0].getName());
+        Tag newTagInDb = TAGS[0];
         Mockito.when(tagDao.createEntity(tag)).thenReturn(newTagInDb);
 
         final Tag actual = tagService.create(tag);
@@ -88,8 +88,16 @@ class TagServiceImplTest {
     }
 
     @Test
-    void remove(){
-        //?
-    }
+    void testRemove() {
+        Tag tag = TAGS[0];
+        Certificate certificate1 = CERTIFICATES[0];
+        Certificate certificate2 = CERTIFICATES[1];
 
+        Mockito.when(certificateAndTagDao.listOfCertificatesIdByTags(tag.getId()))
+                .thenReturn(Arrays.asList(certificate1.getId(), certificate2.getId()));
+
+        tagService.remove(tag.getId());
+        Mockito.verify(certificateAndTagDao, Mockito.times(1)).removeEntity(tag.getId(), certificate1.getId());
+        Mockito.verify(certificateAndTagDao, Mockito.times(1)).removeEntity(tag.getId(), certificate2.getId());
+    }
 }

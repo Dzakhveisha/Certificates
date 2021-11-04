@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.BaseDao;
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.impl.JdbcCertificateDaoImpl;
+import com.epam.esm.dao.impl.JdbcTagDaoImpl;
 import com.epam.esm.model.Certificate;
 import com.epam.esm.model.CertificateAndTag;
 import com.epam.esm.model.Tag;
@@ -22,19 +23,20 @@ import java.util.Optional;
 public class CertificateServiceImpl implements CertificateService {
 
     private final JdbcCertificateDaoImpl certificateDao;
-    private final BaseDao<Tag> tagDao;
+    private final JdbcTagDaoImpl tagDao;
     private final JdbcCertificateAndTagDaoImpl certificateAndTagDao;
 
     @Override
     public Certificate findById(Long id) {
         Certificate certificate = certificateDao.getEntityById(id).orElseThrow(() -> new CertificateNotFoundException(id));
-        return addTags(certificate);
+        addTags(certificate);
+        return certificate;
     }
 
     @Override
     public List<Certificate> findAll() {
         final List<Certificate> certificates = certificateDao.listOfEntities();
-        certificates.forEach((certificate) -> certificate = addTags(certificate));
+        certificates.forEach(this::addTags);
         return certificates;
     }
 
@@ -51,7 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public Certificate update(Long id, Certificate entity) {
         entity.setLastUpdateDate(LocalDateTime.now());
-        Certificate certificate = ((JdbcCertificateDaoImpl) certificateDao).updateEntity(id, entity).orElseThrow(() -> new CertificateNotFoundException(id));
+        Certificate certificate = certificateDao.updateEntity(id, entity).orElseThrow(() -> new CertificateNotFoundException(id));
         if (entity.getTags() != null) {
             deleteTags(certificate);
             return updateTags(entity.getTags(), certificate);
@@ -70,7 +72,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<Certificate> sortAllWithCriteria(String sortBy, String order, String partName, String tagName) {
         List<Certificate> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagName);
-        certificates.forEach((certificate) -> certificate = addTags(certificate));
+        certificates.forEach(this::addTags);
         return certificates;
     }
 
@@ -96,11 +98,10 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
-    private Certificate addTags(Certificate certificate) {
+    private void addTags(Certificate certificate) {
         final List<Long> tagsIds = certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId());
         for (Long tagId : tagsIds) {
             certificate.addTag(tagDao.getEntityById(tagId).get());
         }
-        return certificate;
     }
 }
