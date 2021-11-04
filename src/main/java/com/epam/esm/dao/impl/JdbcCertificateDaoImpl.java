@@ -27,7 +27,7 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     private static final String SQL_ORDER_BY_DESC = " ORDER BY %s DESC";
     private static final String SQL_ORDER_BY_ASC = " ORDER BY %s ASC";
     private static final String SQL_WHERE_LIKE = " WHERE ((name LIKE '%%%s%%') OR ( description LIKE '%%%s%%')) AND (%s)";
-    private static final String SQL_WHERE_TAG_NAME = " EXISTS ( SELECT * FROM certificate_tag WHERE (certificate_id=id) AND (SELECT id FROM tags WHERE name = '%s'))";
+    private static final String SQL_WHERE_TAG_NAME = " EXISTS ( SELECT * FROM certificate_tag WHERE (certificate_id=id) AND ( tag_id = (SELECT id FROM tags WHERE name = '%s')))";
 
 
     public JdbcCertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
