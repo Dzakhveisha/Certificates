@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-public class serviceConfig {
+public class ServiceConfig {
 
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {

@@ -21,4 +21,3 @@ public class TagRowMapper implements RowMapper<Tag> {
         return tag;
     }
 }
-

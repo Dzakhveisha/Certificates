@@ -1,18 +1,18 @@
 package com.epam.esm.service;
 
-
-import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.model.Tag;
+import com.epam.esm.exception.TagNotFoundException;
 
 import java.util.List;
 
-public interface TagService {
+    public interface TagService {
 
-    Tag findById(Long id) throws TagNotFoundException;
+        Tag findById(Long id) throws TagNotFoundException;
 
-    List<Tag> findAll();
+        List<Tag> findAll();
 
-    Tag create(Tag entity);
+        Tag create(Tag entity);
 
-    void remove(Long id);
-}
+        void remove(Long id);
+    }
+

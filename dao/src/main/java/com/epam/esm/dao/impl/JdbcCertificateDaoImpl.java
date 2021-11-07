@@ -83,7 +83,7 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
         return jdbcTemplate.query(SQL, rowMapper);
     }
 
-    protected Object[] getValuesForUpdating(Certificate entity, Long id) {
+    private Object[] getValuesForUpdating(Certificate entity, Long id) {
         ArrayList<Object> result = new ArrayList<>();
         if (entity.getName() != null) {
             result.add(entity.getName());

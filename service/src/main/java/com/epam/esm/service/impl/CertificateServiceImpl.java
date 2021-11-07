@@ -1,23 +1,21 @@
 package com.epam.esm.service.impl;
 
-
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.impl.JdbcCertificateDaoImpl;
 import com.epam.esm.dao.impl.JdbcTagDaoImpl;
-import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.model.Certificate;
 import com.epam.esm.model.CertificateAndTag;
 import com.epam.esm.model.Tag;
+import com.epam.esm.service.CertificateService;
+import com.epam.esm.exception.CertificateNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.epam.esm.service.CertificateService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
