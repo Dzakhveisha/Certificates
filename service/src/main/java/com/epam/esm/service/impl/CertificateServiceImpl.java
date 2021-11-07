@@ -3,11 +3,11 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.impl.JdbcCertificateDaoImpl;
 import com.epam.esm.dao.impl.JdbcTagDaoImpl;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.model.Certificate;
 import com.epam.esm.model.CertificateAndTag;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.exception.CertificateNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +45,8 @@ public class CertificateServiceImpl implements CertificateService {
         entity.setCreateDate(LocalDateTime.now());
         entity.setLastUpdateDate(LocalDateTime.now());
         Certificate certificateNew = certificateDao.createEntity(entity);
-        return updateTags(entity.getTags(), certificateNew);
+        createTags(entity.getTags(), certificateNew);
+        return certificateNew;
     }
 
     @Transactional
@@ -54,10 +55,24 @@ public class CertificateServiceImpl implements CertificateService {
         entity.setLastUpdateDate(LocalDateTime.now());
         Certificate certificate = certificateDao.updateEntity(id, entity).orElseThrow(() -> new CertificateNotFoundException(id));
         if (entity.getTags() != null) {
-            deleteTags(certificate);
-            return updateTags(entity.getTags(), certificate);
+            updateTags(entity.getTags(), certificate);
         }
         return certificate;
+    }
+
+    private void updateTags(List<Tag> newTags, Certificate certificate) {
+        List<Long> oldTagsIds = certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId());
+        oldTagsIds.forEach((oldTagId) -> {
+            if (!newTags.contains(tagDao.getEntityById(oldTagId).get())) {
+                certificateAndTagDao.removeEntity(oldTagId, certificate.getId());
+            }
+        });
+        newTags.forEach(tag -> {
+            if (!certificateAndTagDao.getEntityByTagAndCertificate(certificate.getId(), tag.getId()).isPresent()) {
+                certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), tag.getId()));
+            }
+            certificate.addTag(tag);
+        });
     }
 
     @Transactional
@@ -75,10 +90,10 @@ public class CertificateServiceImpl implements CertificateService {
         return certificates;
     }
 
-    private Certificate updateTags(List<Tag> tags, Certificate certificate) {
+    private void createTags(List<Tag> tags, Certificate certificate) {
         if (tags == null) {
             certificate.setTags(Collections.emptyList());
-            return certificate;
+            return;
         }
         for (Tag tag : tags) {
             if (!tagDao.getEntityById(tag.getId()).isPresent()) {
@@ -87,7 +102,6 @@ public class CertificateServiceImpl implements CertificateService {
             certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), tag.getId()));
             certificate.addTag(tag);
         }
-        return certificate;
     }
 
     private void deleteTags(Certificate certificate) {

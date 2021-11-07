@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.BaseDao;
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
+import com.epam.esm.dao.impl.JdbcTagDaoImpl;
 import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private final BaseDao<Tag> jdbcTagDao;
+    private final JdbcTagDaoImpl jdbcTagDao;
     private final JdbcCertificateAndTagDaoImpl certificateAndTagDao;
 
     @Override
@@ -30,7 +31,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag create(Tag entity) {
-        return jdbcTagDao.createEntity(entity);
+        if (!jdbcTagDao.getTagByName(entity.getName()).isPresent()) {
+            return jdbcTagDao.createEntity(entity);
+        }
+        return jdbcTagDao.getTagByName(entity.getName()).get();
     }
 
     @Transactional

@@ -64,6 +64,9 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     }
 
     public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, String tagName) {
+        if (!sortBy.equals("name") && !sortBy.equals("create_date")){
+            sortBy = "id";
+        }
         String SQL;
         if (tagName != null) {
             final String sqlWhereLikeWithTagName = String.format(SQL_WHERE_LIKE, partName, partName, String.format(SQL_WHERE_TAG_NAME, tagName));
