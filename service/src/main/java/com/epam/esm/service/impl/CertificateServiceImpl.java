@@ -5,18 +5,18 @@ import com.epam.esm.dao.impl.JdbcCertificateDaoImpl;
 import com.epam.esm.dao.impl.JdbcTagDaoImpl;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.dto.mapper.TagDtoMapper;
-import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.dto.mapper.CertificateDtoMapper;
-
+import com.epam.esm.dto.mapper.TagDtoMapper;
+import com.epam.esm.exception.ArgumentNotValidException;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.model.Certificate;
 import com.epam.esm.model.CertificateAndTag;
 import com.epam.esm.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,7 +88,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public boolean remove(Long id) {
-        CertificateDto deletedCertificate = certificateDtoMapper.toDTO(certificateDao.getEntityById(id).orElseThrow(()-> new CertificateNotFoundException(id)));
+        CertificateDto deletedCertificate = certificateDtoMapper.toDTO(certificateDao.getEntityById(id).orElseThrow(() -> new CertificateNotFoundException(id)));
         deleteTags(deletedCertificate);
         return certificateDao.removeEntity(id);
     }
