@@ -1,16 +1,17 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.BaseDao;
 import com.epam.esm.dao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.impl.JdbcTagDaoImpl;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.mapper.TagDtoMapper;
 import com.epam.esm.exception.TagNotFoundException;
-import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,23 +19,25 @@ public class TagServiceImpl implements TagService {
 
     private final JdbcTagDaoImpl jdbcTagDao;
     private final JdbcCertificateAndTagDaoImpl certificateAndTagDao;
+    private final TagDtoMapper dtoMapper;
 
     @Override
-    public Tag findById(Long id) {
-        return jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id));
+    public TagDto findById(Long id) {
+        return dtoMapper.toDTO(jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id)));
     }
 
     @Override
-    public List<Tag> findAll() {
-        return jdbcTagDao.listOfEntities();
+    public List<TagDto> findAll() {
+        return jdbcTagDao.listOfEntities().stream().map(dtoMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Tag create(Tag entity) {
+    public TagDto create(TagDto entity) {
         if (!jdbcTagDao.getTagByName(entity.getName()).isPresent()) {
-            return jdbcTagDao.createEntity(entity);
+            return dtoMapper.toDTO(jdbcTagDao
+                    .createEntity(dtoMapper.toEntity(entity)));
         }
-        return jdbcTagDao.getTagByName(entity.getName()).get();
+        return dtoMapper.toDTO(jdbcTagDao.getTagByName(entity.getName()).get());
     }
 
     @Transactional

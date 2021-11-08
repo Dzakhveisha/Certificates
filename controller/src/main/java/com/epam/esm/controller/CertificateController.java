@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
 
-import com.epam.esm.model.Certificate;
+import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,22 +20,22 @@ public class CertificateController {
     private final CertificateService certificateService;
 
     @GetMapping
-    public List<Certificate> getCertificates(@RequestParam(name = "tagName", required = false) String tagName,
-                                             @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
-                                             @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
-                                             @RequestParam(defaultValue = "ASC", name = "order", required = false) String order) {
+    public List<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) String tagName,
+                                                @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
+                                                @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
+                                                @RequestParam(defaultValue = "ASC", name = "order", required = false) String order) {
 
         return certificateService.sortAllWithCriteria(sortBy, order, partName, tagName);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Certificate createCertificate(@Valid @RequestBody Certificate certificate) {
+    public CertificateDto createCertificate(@Valid @RequestBody CertificateDto certificate) {
         return certificateService.create(certificate);
     }
 
     @GetMapping("/{id}")
-    public Certificate getCertificate(@PathVariable Long id) {
+    public CertificateDto getCertificate(@PathVariable Long id) {
         return certificateService.findById(id);
     }
 
@@ -46,7 +46,7 @@ public class CertificateController {
     }
 
     @PutMapping("/{id}")
-    public Certificate updateCertificate(@PathVariable Long id, @Valid @RequestBody Certificate certificate) {
+    public CertificateDto updateCertificate(@PathVariable Long id, @Valid @RequestBody CertificateDto certificate) {
         return certificateService.update(id, certificate);
     }
 }

@@ -1,21 +1,21 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.Certificate;
+import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.exception.CertificateNotFoundException;
 
 import java.util.List;
 
 public interface CertificateService {
 
-    Certificate findById(Long id) throws CertificateNotFoundException;
+    CertificateDto findById(Long id) throws CertificateNotFoundException;
 
-    List<Certificate> findAll();
+    List<CertificateDto> findAll();
 
-    Certificate create(Certificate entity);
+    CertificateDto create(CertificateDto entity);
 
-    Certificate update(Long id, Certificate entity);
+    CertificateDto update(Long id, CertificateDto entity);
 
     boolean remove(Long id);
 
-    List<Certificate> sortAllWithCriteria(String sortBy, String order, String partName, String tagName);
+    List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, String tagName);
 }

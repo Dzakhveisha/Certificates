@@ -1,12 +1,12 @@
 package com.epam.esm.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -15,27 +15,20 @@ import java.util.List;
 @AllArgsConstructor
 public class Certificate extends BaseEntity {
 
-    @NotNull
     private String name;
 
-    @NotNull
     private String description;
 
-    @NotNull
-    @PositiveOrZero
     private Long price;
 
-    @NotNull
-    @Positive
     private Integer duration;
 
     private LocalDateTime createDate;
 
     private LocalDateTime lastUpdateDate;
 
-    private List<Tag> tags;
 
-    public Certificate(Long id, @NotNull String name, @NotNull String description, @NotNull @PositiveOrZero Long price, @NotNull @Positive Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
+    public Certificate(Long id, String name, String description, Long price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         super(id);
         this.name = name;
         this.description = description;
@@ -43,11 +36,5 @@ public class Certificate extends BaseEntity {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tags = tags;
     }
-
-    public void addTag(Tag tag) {
-        tags.add(tag);
-    }
-
 }

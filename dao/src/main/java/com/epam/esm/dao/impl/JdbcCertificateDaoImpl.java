@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +59,7 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     }
 
     public Optional<Certificate> updateEntity(Long id, Certificate entity) {
+        entity.setLastUpdateDate(LocalDateTime.now());
         String SQL = String.format(SQL_UPDATE, getTableName(), getFieldsForUpdating(entity));
         jdbcTemplate.update(SQL, getValuesForUpdating(entity, id));
         return getEntityById(id);

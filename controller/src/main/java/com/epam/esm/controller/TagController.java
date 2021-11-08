@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
-
-
-import com.epam.esm.model.Tag;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,18 +17,18 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping
-    public List<Tag> getAllTags() {
+    public List<TagDto> getAllTags() {
         return tagService.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tag createTag(@Valid @RequestBody Tag tag) {
+    public TagDto createTag(@Valid @RequestBody TagDto tag) {
         return tagService.create(tag);
     }
 
     @GetMapping("/{id}")
-    public Tag getTag(@PathVariable Long id) {
+    public TagDto getTag(@PathVariable Long id) {
         return tagService.findById(id);
     }
 
