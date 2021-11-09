@@ -1,7 +1,6 @@
 package com.epam.esm.dao.jdbcDao;
 
 import com.epam.esm.dao.model.BaseEntity;
-import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,20 +14,20 @@ import java.util.Optional;
 
 public interface BaseDao<T extends BaseEntity> {
 
-     String SQL_INSERT = "INSERT INTO ";
-     String SQL_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
-     String SQL_SELECT = "SELECT * FROM ";
-     String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
+    String SQL_INSERT = "INSERT INTO ";
+    String SQL_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
+    String SQL_SELECT = "SELECT * FROM ";
+    String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
 
-     String getTableName();
+    String getTableName();
 
-     String getFieldsForCreating();
+    String getFieldsForCreating();
 
-     JdbcTemplate getJdbcTemplate();
+    JdbcTemplate getJdbcTemplate();
 
-     RowMapper<T> getRowMapper();
+    RowMapper<T> getRowMapper();
 
-     PreparedStatement prepareStatementForInsert(PreparedStatement ps, T entity) throws SQLException;
+    PreparedStatement prepareStatementForInsert(PreparedStatement ps, T entity) throws SQLException;
 
     default T createEntity(T entity) {
         String SQL = SQL_INSERT + getTableName() + getFieldsForCreating();

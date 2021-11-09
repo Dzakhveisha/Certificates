@@ -43,7 +43,8 @@ class CertificateServiceImplTest {
     void before() {
         certificateDtoMapper = new CertificateDtoMapper();
         tagDtoMapper = new TagDtoMapper();
-        certificateService = new CertificateServiceImpl(certificateDao, tagDao, certificateAndTagDao, certificateDtoMapper, tagDtoMapper);
+        certificateService = new CertificateServiceImpl(certificateDao, tagDao, certificateAndTagDao,
+                certificateDtoMapper, tagDtoMapper);
 
     }
 
@@ -86,14 +87,16 @@ class CertificateServiceImplTest {
         CertificateDto secondCertificate = CERTIFICATES[1];
         List<CertificateDto> certificates = Arrays.asList(firstCertificate, secondCertificate);
         List<Certificate> certificatesEntities = certificates
-                .stream().map(certificateDtoMapper::toEntity).collect(Collectors.toList());
+                .stream()
+                .map(certificateDtoMapper::toEntity)
+                .collect(Collectors.toList());
 
         Mockito.when(certificateAndTagDao.listOfTagsIdByCertificate(firstCertificate.getId())).thenReturn(Arrays.asList(1L));
         Mockito.when(certificateAndTagDao.listOfTagsIdByCertificate(secondCertificate.getId())).thenReturn(Arrays.asList(1L));
         Mockito.when(tagDao.getEntityById(1L)).thenReturn(Optional.ofNullable(tagDtoMapper.toEntity(TAGS[0])));
         Mockito.when(certificateDao.listOfEntities()).thenReturn(certificatesEntities);
-        List<CertificateDto> actual = certificateService.findAll();
 
+        List<CertificateDto> actual = certificateService.findAll();
         assertEquals(certificates, actual);
     }
 
@@ -102,7 +105,9 @@ class CertificateServiceImplTest {
         List<CertificateDto> certificates = Collections.emptyList();
 
         Mockito.when(certificateDao.listOfEntities()).thenReturn(certificates
-                .stream().map(certificateDtoMapper::toEntity).collect(Collectors.toList()));
+                .stream()
+                .map(certificateDtoMapper::toEntity)
+                .collect(Collectors.toList()));
         List<CertificateDto> actual = certificateService.findAll();
 
         assertEquals(certificates, actual);
@@ -110,15 +115,12 @@ class CertificateServiceImplTest {
 
     @Test
     void testCreateShouldReturnNewCertificate() {
-        TagDto tag = new TagDto(1L, "tagName1");
         Certificate newCertificate = new Certificate(null, "certificate1", "description1", 105L, 10,
                 LocalDateTime.of(2021, 11, 6, 11, 0, 0), LocalDateTime.of(2021, 11, 6, 11, 0, 0));
-
         CertificateDto newCertificateInDb = new CertificateDto(6L, "certificate1", "description1", 105L, 10,
                 "2021-11-06 11:00:00", "2021-11-06 11:00:00", Collections.emptyList());
 
         Mockito.when(certificateDao.createEntity(newCertificate)).thenReturn(certificateDtoMapper.toEntity(newCertificateInDb));
-
         CertificateDto actual = certificateService.create(certificateDtoMapper.toDTO(newCertificate));
 
         assertEquals(6L, actual.getId());
@@ -132,7 +134,6 @@ class CertificateServiceImplTest {
 
         CertificateDto updatingCertificate = new CertificateDto(1L, "certificateUP", "up", 105L, 10,
                 "2021-11-06 11:00:00", "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
-        updatingCertificate.setId(1L);
 
         Mockito.when(tagDao.getTagByName(tag.getName())).thenReturn(Optional.ofNullable(tagDtoMapper.toEntity(tag)));
         Mockito.when(certificateDao.updateEntity(certificateForUpdateDto.getId(), certificateDtoMapper.toEntity(certificateForUpdateDto)))

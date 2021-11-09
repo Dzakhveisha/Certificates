@@ -1,7 +1,6 @@
 package com.epam.esm.dao.jdbcDao.impl;
 
 import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
-import com.epam.esm.dao.jdbcDao.CertificateDao;
 import com.epam.esm.dao.model.CertificateAndTag;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,12 +31,14 @@ public class JdbcCertificateAndTagDaoImpl implements CertificateAndTagDao {
 
     @Override
     public List<Long> listOfTagsIdByCertificate(Long certificateId) {
-        return jdbcTemplate.query(SQL_SELECT_BY_CERTIFICATE, (resultSet, i) -> resultSet.getLong("tag_id"), certificateId);
+        return jdbcTemplate.query(SQL_SELECT_BY_CERTIFICATE,
+                (resultSet, i) -> resultSet.getLong("tag_id"), certificateId);
     }
 
     @Override
     public List<Long> listOfCertificatesIdByTags(Long tagId) {
-        return jdbcTemplate.query(SQL_SELECT_BY_TAG, (resultSet, i) -> resultSet.getLong("certificate_id"), tagId);
+        return jdbcTemplate.query(SQL_SELECT_BY_TAG,
+                (resultSet, i) -> resultSet.getLong("certificate_id"), tagId);
     }
 
     @Override
@@ -54,7 +55,8 @@ public class JdbcCertificateAndTagDaoImpl implements CertificateAndTagDao {
 
     @Override
     public Optional<CertificateAndTag> getEntityByTagAndCertificate(Long certificate_id, Long tag_id) {
-        List<CertificateAndTag> certificate = jdbcTemplate.query(SQL_SELECT_BY_TAG_AND_CERTIFICATE, rowMapper, certificate_id, tag_id);
+        List<CertificateAndTag> certificate = jdbcTemplate.query(SQL_SELECT_BY_TAG_AND_CERTIFICATE, rowMapper,
+                certificate_id, tag_id);
         if (certificate.size() == 0) {
             return Optional.empty();
         } else {

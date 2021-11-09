@@ -29,7 +29,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDto> findAll() {
-        return jdbcTagDao.listOfEntities().stream().map(dtoMapper::toDTO).collect(Collectors.toList());
+        return jdbcTagDao.listOfEntities()
+                .stream()
+                .map(dtoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

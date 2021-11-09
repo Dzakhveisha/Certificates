@@ -73,7 +73,10 @@ class TagServiceImplTest {
     void testFindAllShouldReturnAllTagsIfDbIsNotEmpty() {
         List<TagDto> tags = Arrays.asList(TAGS[0], TAGS[1]);
 
-        Mockito.when(tagDao.listOfEntities()).thenReturn(tags.stream().map(tagDtoMapper::toEntity).collect(Collectors.toList()));
+        Mockito.when(tagDao.listOfEntities()).thenReturn(tags
+                .stream()
+                .map(tagDtoMapper::toEntity)
+                .collect(Collectors.toList()));
         List<TagDto> actual = tagService.findAll();
 
         assertEquals(tags, actual);
@@ -83,7 +86,10 @@ class TagServiceImplTest {
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
         List<TagDto> tags = Collections.emptyList();
 
-        Mockito.when(tagDao.listOfEntities()).thenReturn(tags.stream().map(tagDtoMapper::toEntity).collect(Collectors.toList()));
+        Mockito.when(tagDao.listOfEntities()).thenReturn(tags
+                .stream()
+                .map(tagDtoMapper::toEntity)
+                .collect(Collectors.toList()));
         List<TagDto> actual = tagService.findAll();
 
         assertEquals(tags, actual);
