@@ -1,14 +1,14 @@
 package com.epam.esm.service.EntityService.impl;
 
-import com.epam.esm.service.exception.CertificateNotFoundException;
-import com.epam.esm.dao.jdbcDao.impl.JdbcCertificateAndTagDaoImpl;
-import com.epam.esm.dao.jdbcDao.impl.JdbcCertificateDaoImpl;
-import com.epam.esm.dao.jdbcDao.impl.JdbcTagDaoImpl;
+import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
+import com.epam.esm.dao.jdbcDao.CertificateDao;
+import com.epam.esm.dao.jdbcDao.TagDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.service.model.dto.CertificateDto;
-import com.epam.esm.service.model.dto.TagDto;
+import com.epam.esm.service.exception.CertificateNotFoundException;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
 import com.epam.esm.service.mapper.TagDtoMapper;
+import com.epam.esm.service.model.dto.CertificateDto;
+import com.epam.esm.service.model.dto.TagDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +30,20 @@ class CertificateServiceImplTest {
     @InjectMocks
     private CertificateServiceImpl certificateService;
     @Mock
-    private JdbcCertificateDaoImpl certificateDao;
+    private CertificateDao certificateDao;
     @Mock
-    private JdbcCertificateAndTagDaoImpl certificateAndTagDao;
+    private CertificateAndTagDao certificateAndTagDao;
     @Mock
-    private JdbcTagDaoImpl tagDao;
+    private TagDao tagDao;
 
     private CertificateDtoMapper certificateDtoMapper;
     private TagDtoMapper tagDtoMapper;
 
     @BeforeEach
-    void before(){
+    void before() {
         certificateDtoMapper = new CertificateDtoMapper();
         tagDtoMapper = new TagDtoMapper();
-        certificateService = new CertificateServiceImpl(certificateDao,tagDao,certificateAndTagDao,certificateDtoMapper,tagDtoMapper);
+        certificateService = new CertificateServiceImpl(certificateDao, tagDao, certificateAndTagDao, certificateDtoMapper, tagDtoMapper);
 
     }
 
@@ -112,7 +112,7 @@ class CertificateServiceImplTest {
     void testCreateShouldReturnNewCertificate() {
         TagDto tag = new TagDto(1L, "tagName1");
         Certificate newCertificate = new Certificate(null, "certificate1", "description1", 105L, 10,
-                LocalDateTime.of(2021,11,6,11,0,0), LocalDateTime.of(2021,11,6,11,0,0));
+                LocalDateTime.of(2021, 11, 6, 11, 0, 0), LocalDateTime.of(2021, 11, 6, 11, 0, 0));
 
         CertificateDto newCertificateInDb = new CertificateDto(6L, "certificate1", "description1", 105L, 10,
                 "2021-11-06 11:00:00", "2021-11-06 11:00:00", Collections.emptyList());
@@ -128,12 +128,13 @@ class CertificateServiceImplTest {
     void testUpdateShouldReturnUpdateCertificate() {
         TagDto tag = TAGS[2];
         CertificateDto certificateForUpdateDto = new CertificateDto(1L, "certificateUP", "up", null,
-                null,null, "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
+                null, null, "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
 
         CertificateDto updatingCertificate = new CertificateDto(1L, "certificateUP", "up", 105L, 10,
                 "2021-11-06 11:00:00", "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
         updatingCertificate.setId(1L);
 
+        Mockito.when(tagDao.getTagByName(tag.getName())).thenReturn(Optional.ofNullable(tagDtoMapper.toEntity(tag)));
         Mockito.when(certificateDao.updateEntity(certificateForUpdateDto.getId(), certificateDtoMapper.toEntity(certificateForUpdateDto)))
                 .thenReturn(Optional.of(certificateDtoMapper.toEntity(updatingCertificate)));
 
@@ -146,11 +147,11 @@ class CertificateServiceImplTest {
     void testUpdateShouldThrowCertificateNotFoundExceptionIfItIsNotExistInDb() {
         TagDto tag = TAGS[2];
         CertificateDto certificateForUpdateDto = new CertificateDto(222L, "certificateUP", "up", null,
-                null,null, "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
+                null, null, "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(tag)));
 
         Certificate certificateForUpdate = certificateDtoMapper.toEntity(certificateForUpdateDto);
 
-        Mockito.when(certificateDao.updateEntity(222L,  certificateForUpdate)).thenReturn(Optional.empty());
+        Mockito.when(certificateDao.updateEntity(222L, certificateForUpdate)).thenReturn(Optional.empty());
 
         assertThrows(CertificateNotFoundException.class, () -> certificateService.update(222L, certificateForUpdateDto));
     }
@@ -161,6 +162,7 @@ class CertificateServiceImplTest {
         TagDto secondTag = TAGS[2];
         CertificateDto certificate = CERTIFICATES[2];
 
+        Mockito.when(certificateDao.removeEntity(certificate.getId())).thenReturn(true);
         Mockito.when(certificateDao.getEntityById(certificate.getId())).thenReturn(Optional.of(certificateDtoMapper.toEntity(certificate)));
         Mockito.when(certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId()))
                 .thenReturn(new ArrayList<>(Arrays.asList(firstTag.getId(), secondTag.getId())));

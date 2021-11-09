@@ -1,7 +1,8 @@
 package com.epam.esm.dao.jdbcDao.impl;
 
-import com.epam.esm.dao.jdbcDao.BaseDao;
+import com.epam.esm.dao.jdbcDao.TagDao;
 import com.epam.esm.dao.model.Tag;
+import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -13,33 +14,38 @@ import java.util.Optional;
 
 
 @Component
-public class JdbcTagDaoImpl extends BaseDao<Tag> {
+@Data
+public class JdbcTagDaoImpl implements TagDao {
 
     private static final String TAG_NAME = "name";
 
     private static final String SQL_SELECT_BY_NAME = "SELECT * FROM %s WHERE name = ?";
 
+    final JdbcTemplate jdbcTemplate;
+    final RowMapper<Tag> rowMapper;
 
     public JdbcTagDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Tag> rowMapper) {
-        super(jdbcTemplate, rowMapper);
+        this.jdbcTemplate = jdbcTemplate;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return "tags";
     }
 
     @Override
-    protected String getFieldsForCreating() {
+    public String getFieldsForCreating() {
         return String.format(" (%s) values (?) ", TAG_NAME);
     }
 
     @Override
-    protected PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Tag entity) throws SQLException {
+    public PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Tag entity) throws SQLException {
         preparedStatement.setString(1, entity.getName());
         return preparedStatement;
     }
 
+    @Override
     public Optional<Tag> getTagByName(String name) {
         String SQL = String.format(SQL_SELECT_BY_NAME, getTableName());
         List<Tag> certificate = jdbcTemplate.query(SQL, rowMapper, name);

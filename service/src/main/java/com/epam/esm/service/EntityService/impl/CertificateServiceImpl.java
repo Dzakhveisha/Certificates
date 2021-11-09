@@ -1,5 +1,8 @@
 package com.epam.esm.service.EntityService.impl;
 
+import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
+import com.epam.esm.dao.jdbcDao.CertificateDao;
+import com.epam.esm.dao.jdbcDao.TagDao;
 import com.epam.esm.dao.jdbcDao.impl.JdbcCertificateAndTagDaoImpl;
 import com.epam.esm.dao.jdbcDao.impl.JdbcCertificateDaoImpl;
 import com.epam.esm.dao.jdbcDao.impl.JdbcTagDaoImpl;
@@ -24,9 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CertificateServiceImpl implements CertificateService {
 
-    private final JdbcCertificateDaoImpl certificateDao;
-    private final JdbcTagDaoImpl tagDao;
-    private final JdbcCertificateAndTagDaoImpl certificateAndTagDao;
+    private final CertificateDao certificateDao;
+    private final TagDao tagDao;
+    private final CertificateAndTagDao certificateAndTagDao;
 
     private final CertificateDtoMapper certificateDtoMapper;
     private final TagDtoMapper tagDtoMapper;

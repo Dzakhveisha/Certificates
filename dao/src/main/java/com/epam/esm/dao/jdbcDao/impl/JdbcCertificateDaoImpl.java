@@ -1,7 +1,8 @@
 package com.epam.esm.dao.jdbcDao.impl;
 
-import com.epam.esm.dao.jdbcDao.BaseDao;
+import com.epam.esm.dao.jdbcDao.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
+import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
+@Data
+public class JdbcCertificateDaoImpl implements CertificateDao {
 
     private static final String CERT_NAME = "name";
     private static final String CERT_DESCRIPTION = "description";
@@ -31,24 +33,28 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
     private static final String SQL_WHERE_TAG_NAME = " EXISTS ( SELECT * FROM certificate_tag WHERE (certificate_id=id) AND ( tag_id = (SELECT id FROM tags WHERE name = '%s')))";
 
 
+    final JdbcTemplate jdbcTemplate;
+    final RowMapper<Certificate> rowMapper;
+
     public JdbcCertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
-        super(jdbcTemplate, rowMapper);
+        this.jdbcTemplate = jdbcTemplate;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return "certificates";
     }
 
     @Override
-    protected String getFieldsForCreating() {
+    public String getFieldsForCreating() {
         return String.format(" (%s, %s, %s, %s, %s, %s) values (?, ?, ?, ?, ?, ?) "
                 , CERT_NAME, CERT_DESCRIPTION, CERT_PRICE, CERT_DURATION, CERT_CREATE_DATE,
                 CERT_LAST_UPDATE_DATE);
     }
 
     @Override
-    protected PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Certificate entity) throws SQLException {
+    public PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, Certificate entity) throws SQLException {
         preparedStatement.setString(1, entity.getName());
         preparedStatement.setString(2, entity.getDescription());
         preparedStatement.setLong(3, entity.getPrice());
@@ -58,15 +64,17 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
         return preparedStatement;
     }
 
+    @Override
     public Optional<Certificate> updateEntity(Long id, Certificate entity) {
         entity.setLastUpdateDate(LocalDateTime.now());
         String SQL = String.format(SQL_UPDATE, getTableName(), getFieldsForUpdating(entity));
-        jdbcTemplate.update(SQL, getValuesForUpdating(entity, id));
+        getJdbcTemplate().update(SQL, getValuesForUpdating(entity, id));
         return getEntityById(id);
     }
 
+    @Override
     public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, String tagName) {
-        if (!sortBy.equals("name") && !sortBy.equals("create_date")){
+        if (!sortBy.equals("name") && !sortBy.equals("create_date")) {
             sortBy = "id";
         }
         String SQL;
@@ -85,7 +93,7 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
                 SQL = SQL_SELECT + getTableName() + String.format(SQL_WHERE_LIKE, partName, partName, "TRUE") + String.format(SQL_ORDER_BY_ASC, sortBy);
             }
         }
-        return jdbcTemplate.query(SQL, rowMapper);
+        return getJdbcTemplate().query(SQL, getRowMapper());
     }
 
     private Object[] getValuesForUpdating(Certificate entity, Long id) {
@@ -107,7 +115,7 @@ public class JdbcCertificateDaoImpl extends BaseDao<Certificate> {
         return result.toArray();
     }
 
-    protected String getFieldsForUpdating(Certificate entity) {
+    private String getFieldsForUpdating(Certificate entity) {
         String result = "";
         if (entity.getName() != null) {
             result += String.format(" %s = ?,", CERT_NAME);

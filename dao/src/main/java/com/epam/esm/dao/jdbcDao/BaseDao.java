@@ -13,28 +13,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@AllArgsConstructor
-public abstract class BaseDao<T extends BaseEntity> {
+public interface BaseDao<T extends BaseEntity> {
 
-    private static final String SQL_INSERT = "INSERT INTO ";
-    private static final String SQL_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
-    protected static final String SQL_SELECT = "SELECT * FROM ";
-    private static final String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
+     String SQL_INSERT = "INSERT INTO ";
+     String SQL_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
+     String SQL_SELECT = "SELECT * FROM ";
+     String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
 
-    protected final JdbcTemplate jdbcTemplate;
-    protected final RowMapper<T> rowMapper;
+     String getTableName();
 
-    protected abstract String getTableName();
+     String getFieldsForCreating();
 
-    protected abstract String getFieldsForCreating();
+     JdbcTemplate getJdbcTemplate();
 
-    protected abstract PreparedStatement prepareStatementForInsert(PreparedStatement ps, T entity) throws SQLException;
+     RowMapper<T> getRowMapper();
 
-    public T createEntity(T entity) {
+     PreparedStatement prepareStatementForInsert(PreparedStatement ps, T entity) throws SQLException;
+
+    default T createEntity(T entity) {
         String SQL = SQL_INSERT + getTableName() + getFieldsForCreating();
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
+        getJdbcTemplate().update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL, new String[]{"id"});
             return prepareStatementForInsert(ps, entity);
         }, keyHolder);
@@ -42,9 +42,9 @@ public abstract class BaseDao<T extends BaseEntity> {
         return getEntityById(Objects.requireNonNull(keyHolder.getKey()).longValue()).get();
     }
 
-    public Optional<T> getEntityById(Long id) {
+    default Optional<T> getEntityById(Long id) {
         String SQL = String.format(SQL_SELECT_BY_ID, getTableName());
-        List<T> certificate = jdbcTemplate.query(SQL, rowMapper, id);
+        List<T> certificate = getJdbcTemplate().query(SQL, getRowMapper(), id);
         if (certificate.size() == 0) {
             return Optional.empty();
         } else {
@@ -52,15 +52,14 @@ public abstract class BaseDao<T extends BaseEntity> {
         }
     }
 
-    public List<T> listOfEntities() {
+    default List<T> listOfEntities() {
         String SQL = SQL_SELECT + getTableName();
-        return jdbcTemplate.query(SQL, rowMapper);
+        return getJdbcTemplate().query(SQL, getRowMapper());
     }
 
 
-    public boolean removeEntity(Long id) {
+    default boolean removeEntity(Long id) {
         String SQL = String.format(SQL_DELETE, getTableName());
-        return jdbcTemplate.update(SQL, id) == 1;
-
+        return getJdbcTemplate().update(SQL, id) == 1;
     }
 }

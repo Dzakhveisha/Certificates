@@ -1,11 +1,11 @@
 package com.epam.esm.service.EntityService.impl;
 
+import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
+import com.epam.esm.dao.jdbcDao.TagDao;
 import com.epam.esm.service.exception.TagNotFoundException;
-import com.epam.esm.dao.jdbcDao.impl.JdbcCertificateAndTagDaoImpl;
-import com.epam.esm.dao.jdbcDao.impl.JdbcTagDaoImpl;
+import com.epam.esm.service.mapper.TagDtoMapper;
 import com.epam.esm.service.model.dto.CertificateDto;
 import com.epam.esm.service.model.dto.TagDto;
-import com.epam.esm.service.mapper.TagDtoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,16 +26,16 @@ class TagServiceImplTest {
     @InjectMocks
     private TagServiceImpl tagService;
     @Mock
-    private JdbcTagDaoImpl tagDao;
+    private TagDao tagDao;
     @Mock
-    private JdbcCertificateAndTagDaoImpl certificateAndTagDao;
+    private CertificateAndTagDao certificateAndTagDao;
 
     private TagDtoMapper tagDtoMapper;
 
     @BeforeEach
-    void before(){
+    void before() {
         tagDtoMapper = new TagDtoMapper();
-        tagService = new TagServiceImpl(tagDao,certificateAndTagDao, tagDtoMapper);
+        tagService = new TagServiceImpl(tagDao, certificateAndTagDao, tagDtoMapper);
 
     }
 
@@ -106,6 +106,7 @@ class TagServiceImplTest {
         CertificateDto firstCertificate = CERTIFICATES[0];
         CertificateDto secondCertificate = CERTIFICATES[1];
 
+        Mockito.when(tagDao.removeEntity(tag.getId())).thenReturn(true);
         Mockito.when(certificateAndTagDao.listOfCertificatesIdByTags(tag.getId()))
                 .thenReturn(Arrays.asList(firstCertificate.getId(), secondCertificate.getId()));
 
