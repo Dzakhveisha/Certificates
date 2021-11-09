@@ -32,13 +32,6 @@ class TagServiceImplTest {
 
     private TagDtoMapper tagDtoMapper;
 
-    @BeforeEach
-    void before() {
-        tagDtoMapper = new TagDtoMapper();
-        tagService = new TagServiceImpl(tagDao, certificateAndTagDao, tagDtoMapper);
-
-    }
-
     private static final TagDto[] TAGS = {
             new TagDto(1L, "tagName1"),
             new TagDto(2L, "tagName2"),
@@ -53,6 +46,13 @@ class TagServiceImplTest {
             new CertificateDto(3L, "certificate3", "description3", 138L, 10,
                     "2021-11-06 11:00:00", "2021-11-06 11:00:00", new ArrayList<>(Arrays.asList(TAGS[1], TAGS[2])))
     };
+
+    @BeforeEach
+    void before() {
+        tagDtoMapper = new TagDtoMapper();
+        tagService = new TagServiceImpl(tagDao, certificateAndTagDao, tagDtoMapper);
+
+    }
 
     @Test
     void testFindByIdShouldReturnTagWithSuchId() {

@@ -8,6 +8,7 @@ import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.service.EntityService.CertificateService;
 import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.CertificateNotFoundException;
+import com.epam.esm.service.exception.TagNotFoundException;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
 import com.epam.esm.service.mapper.TagDtoMapper;
 import com.epam.esm.service.model.dto.CertificateDto;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +26,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CertificateServiceImpl implements CertificateService {
+
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private final DateTimeFormatter formatterToString = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final CertificateDao certificateDao;
     private final TagDao tagDao;
@@ -53,6 +59,8 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public CertificateDto create(CertificateDto entity) {
+        entity.setCreateDate(LocalDateTime.now().format(formatterToString));
+        entity.setLastUpdateDate(entity.getCreateDate());
         Certificate newCertificateEntity = certificateDtoMapper.toEntity(entity);
         CertificateDto certificateNew = certificateDtoMapper.toDTO(certificateDao.createEntity(newCertificateEntity));
         createTags(entity.getTags(), certificateNew);
@@ -101,10 +109,7 @@ public class CertificateServiceImpl implements CertificateService {
             return;
         }
         for (TagDto tag : tags) {
-            if (!tagDao.getTagByName(tag.getName()).isPresent()) {
-                tagDao.createEntity(tagDtoMapper.toEntity(tag));
-            }
-            TagDto newTag = tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
+            TagDto newTag = getTag(tag);
             certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), newTag.getId()));
             certificate.addTag(newTag);
         }
@@ -132,10 +137,7 @@ public class CertificateServiceImpl implements CertificateService {
             }
         });
         newTags.forEach(tag -> {
-            if (!tagDao.getTagByName(tag.getName()).isPresent()) {
-                tagDao.createEntity(tagDtoMapper.toEntity(tag));
-            }
-            TagDto newTag = tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
+            TagDto newTag = getTag(tag);
             if (!certificateAndTagDao.getEntityByTagAndCertificate(certificate.getId(), newTag.getId()).isPresent()) {
                 certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), newTag.getId()));
             }
@@ -153,6 +155,32 @@ public class CertificateServiceImpl implements CertificateService {
             if (certificate.getDuration() < 0) {
                 throw new ArgumentNotValidException(" Invalid duration!");
             }
+        }
+    }
+
+    private TagDto getTag(TagDto tag) {
+        if (tag.getName() == null && tag.getId() == null){
+            throw new ArgumentNotValidException("tag's name and id are null!");
+        }
+        if (tag.getId() != null){
+            if (tagDao.getEntityById(tag.getId()).isPresent()) {
+                return tagDtoMapper.toDTO(tagDao.getEntityById(tag.getId()).get());
+            }
+            else{
+                if (tag.getName() != null) {
+                    if (!tagDao.getTagByName(tag.getName()).isPresent()) {
+                        tagDao.createEntity(tagDtoMapper.toEntity(tag));
+                    }
+                    return tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
+                }
+                else throw new TagNotFoundException(tag.getId());
+            }
+        }
+        else{
+            if (!tagDao.getTagByName(tag.getName()).isPresent()) {
+                tagDao.createEntity(tagDtoMapper.toEntity(tag));
+            }
+            return tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
         }
     }
 }
