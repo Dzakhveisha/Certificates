@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Generic DAO, containing base operations with database
+ *
+ * @param <T> entities which DAO operates with
+ */
 public interface BaseDao<T extends BaseEntity> {
 
     String SQL_INSERT = "INSERT INTO ";
@@ -19,16 +24,42 @@ public interface BaseDao<T extends BaseEntity> {
     String SQL_SELECT = "SELECT * FROM ";
     String SQL_DELETE = "DELETE FROM %s WHERE id = ?";
 
+    /**
+     * @return name of table in database
+     */
     String getTableName();
 
+    /**
+     * @return string containing all fields names
+     */
     String getFieldsForCreating();
 
+    /**
+     * @return JdbcTemplate object
+     */
     JdbcTemplate getJdbcTemplate();
 
+    /**
+     * @return RowMapper object for entity T
+     */
     RowMapper<T> getRowMapper();
 
-    PreparedStatement prepareStatementForInsert(PreparedStatement ps, T entity) throws SQLException;
+    /**
+     * Build prepared statement for insert query
+     *
+     * @param preparedStatement prepared statement
+     * @param entity inserted entity
+     * @return prepared Statement
+     * @throws SQLException
+     */
+    PreparedStatement prepareStatementForInsert(PreparedStatement preparedStatement, T entity) throws SQLException;
 
+    /**
+     * Create new entity in database
+     *
+     * @param entity entity for creating
+     * @return created entity from database
+     */
     default T createEntity(T entity) {
         String SQL = SQL_INSERT + getTableName() + getFieldsForCreating();
 
@@ -41,6 +72,12 @@ public interface BaseDao<T extends BaseEntity> {
         return getEntityById(Objects.requireNonNull(keyHolder.getKey()).longValue()).get();
     }
 
+    /**
+     * Get entity by it's id from database
+     *
+     * @param id id of needed entity
+     * @return needed entity
+     */
     default Optional<T> getEntityById(Long id) {
         String SQL = String.format(SQL_SELECT_BY_ID, getTableName());
         List<T> certificate = getJdbcTemplate().query(SQL, getRowMapper(), id);
@@ -51,12 +88,23 @@ public interface BaseDao<T extends BaseEntity> {
         }
     }
 
+    /**
+     * Get all entities from database
+     *
+     * @return list of all entities from database
+     */
     default List<T> listOfEntities() {
         String SQL = SQL_SELECT + getTableName();
         return getJdbcTemplate().query(SQL, getRowMapper());
     }
 
 
+    /**
+     * Remove entity with such id in database
+     *
+     * @param id id of entity to be deleted
+     * @return true, if  successful deletion, else false
+     */
     default boolean removeEntity(Long id) {
         String SQL = String.format(SQL_DELETE, getTableName());
         return getJdbcTemplate().update(SQL, id) == 1;

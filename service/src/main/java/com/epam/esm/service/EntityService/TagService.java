@@ -1,18 +1,39 @@
 package com.epam.esm.service.EntityService;
 
-import com.epam.esm.service.exception.TagNotFoundException;
 import com.epam.esm.service.model.dto.TagDto;
 
 import java.util.List;
 
-    public interface TagService {
+public interface TagService {
 
-        TagDto findById(Long id) throws TagNotFoundException;
+    /**
+     * Find tag by it's name
+     *
+     * @param id id of tag
+     * @return founded tag
+     */
+    TagDto findById(Long id);
 
-        List<TagDto> findAll();
+    /**
+     * Find all tags
+     *
+     * @return list of tags
+     */
+    List<TagDto> findAll();
 
-        TagDto create(TagDto entity);
+    /**
+     * Create tag
+     *
+     * @param entity tag to create
+     * @return created entity
+     */
+    TagDto create(TagDto entity);
 
-        void remove(Long id);
-    }
+    /**
+     * Remove tag with such id
+     *
+     * @param id tag's id
+     */
+    void remove(Long id);
+}
 
