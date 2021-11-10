@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -50,23 +49,20 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RestError handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        return new RestError("Number is illegal!", HttpStatus.BAD_REQUEST, "");
+        return new RestError("Number is illegal!", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ResponseBody
     public RestError handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         String method = e.getMethod();
-        return new RestError(String.format("Method %s is not supported!", method),
-                HttpStatus.BAD_REQUEST, "");
-
+        return new RestError(String.format("Method %s is not supported!", method), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestError HandleRuntimeExceptions(RuntimeException restException) {
-        return new RestError(restException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, "");
+        return new RestError(restException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Data
@@ -77,6 +73,11 @@ public class RestExceptionHandler {
         public RestError(String errorMessage, HttpStatus httpStatus, String exceptionCode) {
             this.errorMessage = errorMessage;
             this.errorCode = httpStatus.value() + exceptionCode;
+        }
+
+        public RestError(String errorMessage, HttpStatus httpStatus) {
+            this.errorMessage = errorMessage;
+            this.errorCode = String.valueOf(httpStatus.value());
         }
     }
 

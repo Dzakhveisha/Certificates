@@ -32,9 +32,8 @@ public class JdbcCertificateDaoImpl implements CertificateDao {
     private static final String SQL_WHERE_LIKE = " WHERE ((name LIKE '%%%s%%') OR ( description LIKE '%%%s%%')) AND (%s)";
     private static final String SQL_WHERE_TAG_NAME = " EXISTS ( SELECT * FROM certificate_tag WHERE (certificate_id=id) AND ( tag_id = (SELECT id FROM tags WHERE name = '%s')))";
 
-
-    final JdbcTemplate jdbcTemplate;
-    final RowMapper<Certificate> rowMapper;
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Certificate> rowMapper;
 
     public JdbcCertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
         this.jdbcTemplate = jdbcTemplate;

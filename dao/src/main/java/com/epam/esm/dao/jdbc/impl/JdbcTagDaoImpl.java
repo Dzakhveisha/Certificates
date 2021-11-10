@@ -21,8 +21,8 @@ public class JdbcTagDaoImpl implements TagDao {
 
     private static final String SQL_SELECT_BY_NAME = "SELECT * FROM %s WHERE name = ?";
 
-    final JdbcTemplate jdbcTemplate;
-    final RowMapper<Tag> rowMapper;
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Tag> rowMapper;
 
     public JdbcTagDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Tag> rowMapper) {
         this.jdbcTemplate = jdbcTemplate;
