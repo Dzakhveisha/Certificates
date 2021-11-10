@@ -1,4 +1,4 @@
-package com.epam.esm.dao.jdbcDao.impl;
+package com.epam.esm.dao.jdbc.impl;
 
 import com.epam.esm.dao.config.DBConfig;
 import com.epam.esm.dao.config.TransactionConfig;

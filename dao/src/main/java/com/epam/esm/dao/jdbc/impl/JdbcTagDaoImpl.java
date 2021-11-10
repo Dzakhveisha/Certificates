@@ -1,6 +1,6 @@
-package com.epam.esm.dao.jdbcDao.impl;
+package com.epam.esm.dao.jdbc.impl;
 
-import com.epam.esm.dao.jdbcDao.TagDao;
+import com.epam.esm.dao.jdbc.TagDao;
 import com.epam.esm.dao.model.Tag;
 import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,8 +1,8 @@
-package com.epam.esm.service.EntityService.impl;
+package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
-import com.epam.esm.dao.jdbcDao.TagDao;
-import com.epam.esm.service.EntityService.TagService;
+import com.epam.esm.dao.jdbc.CertificateAndTagDao;
+import com.epam.esm.dao.jdbc.TagDao;
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.SuchTagAlreadyExistException;
 import com.epam.esm.service.exception.TagNotFoundException;
 import com.epam.esm.service.mapper.TagDtoMapper;

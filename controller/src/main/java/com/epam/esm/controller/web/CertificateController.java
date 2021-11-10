@@ -1,8 +1,8 @@
 package com.epam.esm.controller.web;
 
 
+import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.model.dto.CertificateDto;
-import com.epam.esm.service.EntityService.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;

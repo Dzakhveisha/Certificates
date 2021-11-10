@@ -1,4 +1,4 @@
-package com.epam.esm.dao.jdbcDao;
+package com.epam.esm.dao.jdbc;
 
 import com.epam.esm.dao.model.CertificateAndTag;
 
@@ -29,7 +29,7 @@ public interface CertificateAndTagDao {
     /**
      * Remove entity with such id in database
      *
-     * @param tagId value of field tag's Id in removable entity
+     * @param tagId         value of field tag's Id in removable entity
      * @param certificateId value of field certificate's Id in removable entity
      * @return true, if successful deletion, else false
      */
@@ -47,7 +47,7 @@ public interface CertificateAndTagDao {
      * Get entity by it's tag_id and certificate_id from database
      *
      * @param certificate_id value of field certificate's Id in needed entity
-     * @param tag_id value of field tag's Id in needed entity
+     * @param tag_id         value of field tag's Id in needed entity
      * @return return needed entity
      */
     Optional<CertificateAndTag> getEntityByTagAndCertificate(Long certificate_id, Long tag_id);

@@ -1,4 +1,4 @@
-package com.epam.esm.service.EntityService;
+package com.epam.esm.service;
 
 import com.epam.esm.service.model.dto.TagDto;
 

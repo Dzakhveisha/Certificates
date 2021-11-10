@@ -1,11 +1,11 @@
-package com.epam.esm.service.EntityService.impl;
+package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
-import com.epam.esm.dao.jdbcDao.CertificateDao;
-import com.epam.esm.dao.jdbcDao.TagDao;
+import com.epam.esm.dao.jdbc.CertificateAndTagDao;
+import com.epam.esm.dao.jdbc.CertificateDao;
+import com.epam.esm.dao.jdbc.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
-import com.epam.esm.service.EntityService.CertificateService;
+import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.CertificateNotFoundException;
 import com.epam.esm.service.exception.TagNotFoundException;

@@ -1,4 +1,4 @@
-package com.epam.esm.dao.jdbcDao;
+package com.epam.esm.dao.jdbc;
 
 import com.epam.esm.dao.model.BaseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -48,7 +48,7 @@ public interface BaseDao<T extends BaseEntity> {
      * Build prepared statement for insert query
      *
      * @param preparedStatement prepared statement
-     * @param entity inserted entity
+     * @param entity            inserted entity
      * @return prepared Statement
      * @throws SQLException
      */

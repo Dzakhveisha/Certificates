@@ -1,7 +1,7 @@
 package com.epam.esm.controller.web;
 
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.model.dto.TagDto;
-import com.epam.esm.service.EntityService.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;

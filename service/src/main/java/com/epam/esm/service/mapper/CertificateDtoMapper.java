@@ -9,12 +9,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Component
-public class CertificateDtoMapper {
+public class CertificateDtoMapper implements Mapper<Certificate, CertificateDto> {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final DateTimeFormatter formatterToString = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
     private final DateTimeFormatter formatterToLocalDateTime = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+    @Override
     public Certificate toEntity(CertificateDto certificateDto) {
         if (certificateDto == null) {
             return null;
@@ -33,6 +34,7 @@ public class CertificateDtoMapper {
         return certificate;
     }
 
+    @Override
     public CertificateDto toDTO(Certificate certificate) {
         if (certificate == null) {
             return null;

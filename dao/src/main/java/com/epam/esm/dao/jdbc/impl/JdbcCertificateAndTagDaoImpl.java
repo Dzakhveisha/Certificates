@@ -1,6 +1,6 @@
-package com.epam.esm.dao.jdbcDao.impl;
+package com.epam.esm.dao.jdbc.impl;
 
-import com.epam.esm.dao.jdbcDao.CertificateAndTagDao;
+import com.epam.esm.dao.jdbc.CertificateAndTagDao;
 import com.epam.esm.dao.model.CertificateAndTag;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
