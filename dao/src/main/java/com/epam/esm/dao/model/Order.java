@@ -2,25 +2,34 @@ package com.epam.esm.dao.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "certificate_tag")
+@Table(name = "orders")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificateAndTag {
+public class Order{
+
+    @Id
+    @Column(name = "user_id")
+    private Long userId;
+
     @Id
     @Column(name = "certificate_id")
     private Long certificateId;
 
-    @Id
-    @Column(name = "tag_id")
-    private Long tagId;
+    @Column(name = "price")
+    private long price;
+
+    @Column(name = "date")
+    private LocalDateTime date;
 
 }

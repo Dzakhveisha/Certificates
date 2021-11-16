@@ -10,17 +10,17 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Data
-@Entity
-@Table(name = "tags")
 @EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag extends BaseEntity {
+public class User extends BaseEntity {
 
     @Column(name = "name")
     private String name;
 
-    public Tag(Long id, String name) {
+    public User(Long id, String name) {
         super(id);
         this.name = name;
     }
