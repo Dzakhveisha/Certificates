@@ -2,8 +2,10 @@ package com.epam.esm.controller.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication(scanBasePackages = {"com.epam.esm.**"})
+@EntityScan("com.epam.esm.dao.model")
             // то же, что и @Configuration @EnableAutoConfiguration @ComponentScan
 public class Application {
 
