@@ -1,8 +1,8 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jdbc.CertificateAndTagDao;
-import com.epam.esm.dao.jdbc.CertificateDao;
-import com.epam.esm.dao.jdbc.TagDao;
+import com.epam.esm.dao.jpa.CertificateAndTagDao;
+import com.epam.esm.dao.jpa.CertificateDao;
+import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.service.CertificateService;
@@ -159,24 +159,21 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     private TagDto getTag(TagDto tag) {
-        if (tag.getName() == null && tag.getId() == null){
+        if (tag.getName() == null && tag.getId() == null) {
             throw new ArgumentNotValidException("tag's name and id are null!");
         }
-        if (tag.getId() != null){
+        if (tag.getId() != null) {
             if (tagDao.getEntityById(tag.getId()).isPresent()) {
                 return tagDtoMapper.toDTO(tagDao.getEntityById(tag.getId()).get());
-            }
-            else{
+            } else {
                 if (tag.getName() != null) {
                     if (!tagDao.getTagByName(tag.getName()).isPresent()) {
                         tagDao.createEntity(tagDtoMapper.toEntity(tag));
                     }
                     return tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
-                }
-                else throw new TagNotFoundException(tag.getId());
+                } else throw new TagNotFoundException(tag.getId());
             }
-        }
-        else{
+        } else {
             if (!tagDao.getTagByName(tag.getName()).isPresent()) {
                 tagDao.createEntity(tagDtoMapper.toEntity(tag));
             }

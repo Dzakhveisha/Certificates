@@ -2,21 +2,18 @@ package com.epam.esm.dao.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
+@IdClass(OrderId.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order{
+public class Order {
 
     @Id
     @Column(name = "user_id")

@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jdbc.CertificateAndTagDao;
-import com.epam.esm.dao.jdbc.TagDao;
+import com.epam.esm.dao.jpa.CertificateAndTagDao;
+import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.SuchTagAlreadyExistException;
 import com.epam.esm.service.exception.TagNotFoundException;

@@ -1,5 +1,6 @@
-package com.epam.esm.dao.jdbc.impl;
+package com.epam.esm.dao.jpa.impl;
 
+import com.epam.esm.dao.jpa.UserDao;
 import com.epam.esm.dao.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,11 +14,12 @@ import java.util.List;
 
 @Repository
 @AllArgsConstructor
-public class UserRepository {
+public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private final EntityManager em;
 
-    public List<User> getAll(){
+    @Override
+    public List<User> listOfAll() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         CriteriaQuery<User> userCriteria = cb.createQuery(User.class);
