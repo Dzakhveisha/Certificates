@@ -1,7 +1,9 @@
 package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
+import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
+import com.epam.esm.dao.model.Tag;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +21,8 @@ import java.util.stream.Collectors;
 @Data
 public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String TAG_ID = "tagId";
+    private static final String CERTIFICATE = "certificate";
+    private static final String TAG = "tag";
 
     @PersistenceContext
     private final EntityManager em;
@@ -41,34 +43,34 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
     }
 
     @Override
-    public List<Long> listOfTagsIdByCertificate(Long certificateId) {
+    public List<Tag> listOfTagsByCertificate(Long certificateId) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
 
-        criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE_ID), certificateId));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
         criteriaQuery.select(root);
 
         return em.createQuery(criteriaQuery).getResultList()
                 .stream()
-                .map(CertificateAndTag::getTagId)
+                .map(CertificateAndTag::getTag)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Long> listOfCertificatesIdByTags(Long tagId) {
+    public List<Certificate> listOfCertificatesByTags(Long tagId) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
 
-        criteriaQuery.where(criteriaBuilder.equal(root.get(TAG_ID), tagId));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
         criteriaQuery.select(root);
 
         return em.createQuery(criteriaQuery).getResultList()
                 .stream()
-                .map(CertificateAndTag::getCertificateId)
+                .map(CertificateAndTag::getCertificate)
                 .collect(Collectors.toList());
     }
 
@@ -79,8 +81,8 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         CriteriaDelete<CertificateAndTag> criteriaDelete = criteriaBuilder.createCriteriaDelete(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaDelete.from(CertificateAndTag.class);
 
-        criteriaDelete.where(criteriaBuilder.equal(root.get(CERTIFICATE_ID), certificateId));
-        criteriaDelete.where(criteriaBuilder.equal(root.get(TAG_ID), tagId));
+        criteriaDelete.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
+        criteriaDelete.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
 
         int rowsDeleted = em.createQuery(criteriaDelete).executeUpdate();
         return rowsDeleted > 0;
@@ -98,8 +100,8 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
 
-        criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE_ID), certificateId));
-        criteriaQuery.where(criteriaBuilder.equal(root.get(TAG_ID), tagId));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
         criteriaQuery.select(root);
 
         return Optional.ofNullable(em.createQuery(criteriaQuery).getResultList().get(0));

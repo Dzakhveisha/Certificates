@@ -1,6 +1,8 @@
 package com.epam.esm.dao.jpa;
 
+import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
+import com.epam.esm.dao.model.Tag;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +18,7 @@ public interface CertificateAndTagDao {
      * @param certificateId id of certificate, by which tags are searched
      * @return list of tags, which are included in certificate
      */
-    List<Long> listOfTagsIdByCertificate(Long certificateId);
+    List<Tag> listOfTagsByCertificate(Long certificateId);
 
     /**
      * Get list of certificates, which are contains such tag
@@ -24,7 +26,7 @@ public interface CertificateAndTagDao {
      * @param tagId id of tag, by which certificates are searched
      * @return list of certificates, which are contains such tag
      */
-    List<Long> listOfCertificatesIdByTags(Long tagId);
+    List<Certificate> listOfCertificatesByTags(Long tagId);
 
     /**
      * Remove entity with such id in database

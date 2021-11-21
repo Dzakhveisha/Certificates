@@ -5,12 +5,12 @@ import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
+import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.CertificateNotFoundException;
 import com.epam.esm.service.exception.TagNotFoundException;
-import com.epam.esm.service.mapper.CertificateDtoMapper;
-import com.epam.esm.service.mapper.TagDtoMapper;
+import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.CertificateDto;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,8 @@ public class CertificateServiceImpl implements CertificateService {
     private final TagDao tagDao;
     private final CertificateAndTagDao certificateAndTagDao;
 
-    private final CertificateDtoMapper certificateDtoMapper;
-    private final TagDtoMapper tagDtoMapper;
+    private final Mapper<Certificate, CertificateDto> certificateDtoMapper;
+    private final Mapper<Tag, TagDto> tagDtoMapper;
 
 
     @Override
@@ -71,6 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDto update(Long id, CertificateDto entity) {
         validateCertificate(entity);
+        entity.setLastUpdateDate(LocalDateTime.now().format(formatterToString));
         Certificate newCertificateEntity = certificateDtoMapper.toEntity(entity);
         CertificateDto certificate = certificateDtoMapper.toDTO(certificateDao.updateEntity(id, newCertificateEntity)
                 .orElseThrow(() -> new CertificateNotFoundException(id)));
@@ -110,36 +111,38 @@ public class CertificateServiceImpl implements CertificateService {
         }
         for (TagDto tag : tags) {
             TagDto newTag = getTag(tag);
-            certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), newTag.getId()));
+            certificateAndTagDao.createEntity(new CertificateAndTag(certificateDtoMapper.toEntity(certificate),
+                    tagDtoMapper.toEntity(newTag)));
             certificate.addTag(newTag);
         }
     }
 
     private void deleteTags(CertificateDto certificate) {
-        final List<Long> tagsIds = certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId());
-        for (Long tagId : tagsIds) {
-            certificateAndTagDao.removeEntity(tagId, certificate.getId());
+        final List<Tag> tagsIds = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        for (Tag tag : tagsIds) {
+            certificateAndTagDao.removeEntity(tag.getId(), certificate.getId());
         }
     }
 
     private void addTags(CertificateDto certificate) {
-        final List<Long> tagsIds = certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId());
-        for (Long tagId : tagsIds) {
-            certificate.addTag(tagDtoMapper.toDTO(tagDao.getEntityById(tagId).get()));
+        final List<Tag> tags = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        for (Tag tag : tags) {
+            certificate.addTag(tagDtoMapper.toDTO(tag));
         }
     }
 
     private void updateTags(List<TagDto> newTags, CertificateDto certificate) {
-        List<Long> oldTagsIds = certificateAndTagDao.listOfTagsIdByCertificate(certificate.getId());
-        oldTagsIds.forEach((oldTagId) -> {
-            if (!newTags.contains(tagDtoMapper.toDTO(tagDao.getEntityById(oldTagId).get()))) {
-                certificateAndTagDao.removeEntity(oldTagId, certificate.getId());
+        List<Tag> oldTags = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        oldTags.forEach((oldTag) -> {
+            if (!newTags.contains(tagDtoMapper.toDTO(oldTag))) {
+                certificateAndTagDao.removeEntity(oldTag.getId(), certificate.getId());
             }
         });
         newTags.forEach(tag -> {
             TagDto newTag = getTag(tag);
             if (!certificateAndTagDao.getEntityByTagAndCertificate(certificate.getId(), newTag.getId()).isPresent()) {
-                certificateAndTagDao.createEntity(new CertificateAndTag(certificate.getId(), newTag.getId()));
+                certificateAndTagDao.createEntity(new CertificateAndTag(certificateDtoMapper.toEntity(certificate),
+                        tagDtoMapper.toEntity(newTag)));
             }
             certificate.addTag(newTag);
         });

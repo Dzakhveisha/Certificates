@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +69,7 @@ public class CertificateDaoImpl implements CertificateDao {
         predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + partName + "%"));
 
         if (tagName != null) {
-            Join<Object, Object> tagListJoin = root.join("tags");
+            Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
             Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(tagName);
             predicates.add(predicateTagsList);
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
@@ -81,7 +82,7 @@ public class CertificateDaoImpl implements CertificateDao {
         } else {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
         }
-
+        //em.createNativeQuery()
         return em.createQuery(criteriaQuery).getResultList();
     }
 

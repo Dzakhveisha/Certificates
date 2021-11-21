@@ -2,10 +2,12 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.TagDao;
+import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.SuchTagAlreadyExistException;
 import com.epam.esm.service.exception.TagNotFoundException;
-import com.epam.esm.service.mapper.TagDtoMapper;
+import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class TagServiceImpl implements TagService {
 
     private final TagDao jdbcTagDao;
     private final CertificateAndTagDao certificateAndTagDao;
-    private final TagDtoMapper dtoMapper;
+    private final Mapper<Tag, TagDto> dtoMapper;
 
     @Override
     public TagDto findById(Long id) {
@@ -35,6 +37,7 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public TagDto create(TagDto entity) {
         if (!jdbcTagDao.getTagByName(entity.getName()).isPresent()) {
@@ -47,8 +50,8 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public void remove(Long id) {
-        final List<Long> certificateIds = certificateAndTagDao.listOfCertificatesIdByTags(id);
-        certificateIds.forEach((certificateId) -> certificateAndTagDao.removeEntity(id, certificateId));
+        final List<Certificate> certificateIds = certificateAndTagDao.listOfCertificatesByTags(id);
+        certificateIds.forEach((certificate) -> certificateAndTagDao.removeEntity(id, certificate.getId()));
         if (!jdbcTagDao.removeEntity(id)) {
             throw new TagNotFoundException(id);
         }

@@ -8,17 +8,27 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "certificate_tag")
-@IdClass(CertificateAndTagId.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CertificateAndTag {
-    @Id
-    @Column(name = "certificate_id")
-    private Long certificateId;
 
-    @Id
-    @Column(name = "tag_id")
-    private Long tagId;
+    @EmbeddedId
+    CertificateAndTagId id;
 
+    @ManyToOne
+    @MapsId("certificateId")
+    @JoinColumn(name = "certificate_id")
+    private Certificate certificate;
+
+    @ManyToOne
+    @MapsId("tagId")
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+
+    public CertificateAndTag(Certificate certificate, Tag newTag) {
+        this.certificate = certificate;
+        this.tag = newTag;
+        this.id = new CertificateAndTagId(certificate.getId(), tag.getId());
+    }
 }

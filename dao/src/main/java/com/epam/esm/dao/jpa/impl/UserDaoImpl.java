@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
@@ -27,5 +28,20 @@ public class UserDaoImpl implements UserDao {
         userCriteria.select(root);
 
         return em.createQuery(userCriteria).getResultList();
+    }
+
+    @Override
+    public Optional<User> getById(Long id) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> userCriteria = cb.createQuery(User.class);
+        Root<User> root = userCriteria.from(User.class);
+
+        userCriteria.where(cb.equal(root.get("id"), id));
+        List<User> resultList = em.createQuery(userCriteria).getResultList();
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(resultList.get(0));
+        }
     }
 }

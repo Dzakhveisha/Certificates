@@ -28,9 +28,9 @@ public interface BaseDao<T extends BaseEntity> {
      * @param entity entity for creating
      * @return created entity from database
      */
-    @Transactional
+
     default T createEntity(T entity) {
-        return getEntityManager().merge(entity);
+        return getEntityManager().merge(entity); //check id (persist?)
     }
 
     /**
@@ -48,7 +48,12 @@ public interface BaseDao<T extends BaseEntity> {
         criteriaQuery.where(criteriaBuilder.equal(root.get("id"), id));
         criteriaQuery.select(root);
 
-        return Optional.ofNullable(getEntityManager().createQuery(criteriaQuery).getResultList().get(0));
+        List<T> resultList = getEntityManager().createQuery(criteriaQuery).getResultList();
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(resultList.get(0));
+        }
     }
 
     /**

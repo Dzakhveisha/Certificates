@@ -33,11 +33,9 @@ public class Certificate extends BaseEntity {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
-    @ManyToMany
-    @JoinTable(
-            name = "certificate_tag",
-            joinColumns = @JoinColumn(name = "certificate_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private List<Tag> tags;
+    @OneToMany(mappedBy = "certificate")
+    private List<CertificateAndTag> certificateAndTagList;
+
+    @OneToMany(mappedBy = "certificate")
+    List<Order> orders;
 }

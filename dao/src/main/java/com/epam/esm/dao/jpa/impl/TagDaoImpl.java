@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -46,6 +47,12 @@ public class TagDaoImpl implements TagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(TAG_NAME), name));
         criteriaQuery.select(root);
 
-        return Optional.ofNullable(getEntityManager().createQuery(criteriaQuery).getResultList().get(0));
+        List<Tag> resultList = getEntityManager().createQuery(criteriaQuery).getResultList();
+        if (resultList.isEmpty()){
+            return Optional.empty();
+        }
+        else{
+            return Optional.ofNullable(resultList.get(0));
+        }
     }
 }
