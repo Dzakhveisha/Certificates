@@ -35,5 +35,11 @@ public interface TagService {
      * @param id tag's id
      */
     void remove(Long id);
+
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders
+     * @return the most useful tag
+     */
+    TagDto getMostUsefulTagByMostActiveUser();
 }
 

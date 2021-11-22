@@ -46,4 +46,9 @@ public class TagController {
     public void deleteTag(@PathVariable Long id) {
         tagService.remove(id);
     }
+
+    @GetMapping("/mostUseful")
+    TagDto getMostUsefulTag(){
+        return tagService.getMostUsefulTagByMostActiveUser();
+    }
 }

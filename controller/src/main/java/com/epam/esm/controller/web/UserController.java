@@ -4,6 +4,7 @@ import com.epam.esm.service.UserService;
 import com.epam.esm.service.model.dto.OrderDto;
 import com.epam.esm.service.model.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,9 +23,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    UserDto getUser(@PathVariable long id){return  userService.getById(id);}
+    UserDto getUser(@PathVariable long id) {
+        return userService.getById(id);
+    }
 
     @PostMapping("/{id}/orders")
+    @ResponseStatus(HttpStatus.CREATED)
     OrderDto createOrder(@PathVariable long id, @Valid @RequestBody OrderDto order) {
         return userService.createOrder(id, order);
     }
@@ -38,7 +42,4 @@ public class UserController {
     OrderDto getUserOrderById(@PathVariable long id, @PathVariable long orderId) {
         return userService.getUserOrder(id, orderId);
     }
-
-
-    // получить самый используемый тег у самого покупающего пользователя
 }

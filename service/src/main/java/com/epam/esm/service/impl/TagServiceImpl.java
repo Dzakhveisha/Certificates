@@ -20,18 +20,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private final TagDao jdbcTagDao;
+    private final TagDao tagDao;
     private final CertificateAndTagDao certificateAndTagDao;
     private final Mapper<Tag, TagDto> dtoMapper;
 
     @Override
     public TagDto findById(Long id) {
-        return dtoMapper.toDTO(jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id)));
+        return dtoMapper.toDTO(tagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id)));
     }
 
     @Override
     public List<TagDto> findAll() {
-        return jdbcTagDao.listOfEntities()
+        return tagDao.listOfEntities()
                 .stream()
                 .map(dtoMapper::toDTO)
                 .collect(Collectors.toList());
@@ -40,8 +40,8 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public TagDto create(TagDto entity) {
-        if (!jdbcTagDao.getTagByName(entity.getName()).isPresent()) {
-            return dtoMapper.toDTO(jdbcTagDao
+        if (!tagDao.getTagByName(entity.getName()).isPresent()) {
+            return dtoMapper.toDTO(tagDao
                     .createEntity(dtoMapper.toEntity(entity)));
         }
         throw new SuchTagAlreadyExistException(entity.getName());
@@ -52,8 +52,13 @@ public class TagServiceImpl implements TagService {
     public void remove(Long id) {
         final List<Certificate> certificateIds = certificateAndTagDao.listOfCertificatesByTags(id);
         certificateIds.forEach((certificate) -> certificateAndTagDao.removeEntity(id, certificate.getId()));
-        if (!jdbcTagDao.removeEntity(id)) {
+        if (!tagDao.removeEntity(id)) {
             throw new TagNotFoundException(id);
         }
+    }
+
+    @Override
+    public TagDto getMostUsefulTagByMostActiveUser() {
+        return  dtoMapper.toDTO(tagDao.getMostUsefulByMostActiveUser().get());
     }
 }

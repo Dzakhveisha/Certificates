@@ -15,4 +15,10 @@ public interface TagDao extends BaseDao<Tag> {
      * @return found tag with such name
      */
     Optional<Tag> getTagByName(String name);
+
+    /**
+     * Find the most widely used tag in database of a user with the highest cost of all orders
+     * @return most useful tag
+     */
+    Optional<Tag> getMostUsefulByMostActiveUser();
 }
