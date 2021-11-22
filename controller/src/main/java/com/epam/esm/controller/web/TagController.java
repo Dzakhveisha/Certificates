@@ -1,5 +1,6 @@
 package com.epam.esm.controller.web;
 
+import com.epam.esm.controller.hateoas.Linker;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +28,24 @@ public class TagController {
 
     @GetMapping
     public List<TagDto> getAllTags() {
-        return tagService.findAll();
+        List<TagDto> tags = tagService.findAll();
+        tags.forEach(Linker::addLinks);
+        return tags;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TagDto createTag(@Valid @RequestBody TagDto tag) {
-        return tagService.create(tag);
+        TagDto createdTag = tagService.create(tag);
+        Linker.addLinks(createdTag);
+        return createdTag;
     }
 
     @GetMapping("/{id}")
     public TagDto getTag(@PathVariable Long id) {
-        return tagService.findById(id);
+        TagDto tag = tagService.findById(id);
+        Linker.addLinks(tag);
+        return tag;
     }
 
     @DeleteMapping("/{id}")
@@ -49,6 +56,8 @@ public class TagController {
 
     @GetMapping("/mostUseful")
     TagDto getMostUsefulTag(){
-        return tagService.getMostUsefulTagByMostActiveUser();
+        TagDto mostUsefulTag = tagService.getMostUsefulTagByMostActiveUser();
+        Linker.addLinks(mostUsefulTag);
+        return mostUsefulTag;
     }
 }
