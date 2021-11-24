@@ -42,10 +42,9 @@ public class OrderDaoImpl implements OrderDao {
 
         orderCriteria.where(criteriaBuilder.equal(root.get("id"), orderId));
         List<Order> orderList = entityManager.createQuery(orderCriteria).getResultList();
-        if (orderList.isEmpty()){
-            return  Optional.empty();
-        }
-        else {
+        if (orderList.isEmpty()) {
+            return Optional.empty();
+        } else {
             return Optional.ofNullable(orderList.get(0));
         }
     }
