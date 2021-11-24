@@ -17,31 +17,31 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OrderDaoImpl implements OrderDao {
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
     @Override
     public List<Order> getOrders(long id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Order> orderCriteria = cb.createQuery(Order.class);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> orderCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = orderCriteria.from(Order.class);
 
-        orderCriteria.where(cb.equal(root.get("user").get("id"), id));
-        return em.createQuery(orderCriteria).getResultList();
+        orderCriteria.where(criteriaBuilder.equal(root.get("user").get("id"), id));
+        return entityManager.createQuery(orderCriteria).getResultList();
     }
 
     @Override
     public Order create(Order order) {
-        return em.merge(order);
+        return entityManager.merge(order);
     }
 
     @Override
     public Optional<Order> getById(long orderId) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Order> orderCriteria = cb.createQuery(Order.class);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> orderCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = orderCriteria.from(Order.class);
 
-        orderCriteria.where(cb.equal(root.get("id"), orderId));
-        List<Order> orderList = em.createQuery(orderCriteria).getResultList();
+        orderCriteria.where(criteriaBuilder.equal(root.get("id"), orderId));
+        List<Order> orderList = entityManager.createQuery(orderCriteria).getResultList();
         if (orderList.isEmpty()){
             return  Optional.empty();
         }

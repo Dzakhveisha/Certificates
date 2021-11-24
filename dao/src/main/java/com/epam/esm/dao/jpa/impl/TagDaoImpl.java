@@ -10,7 +10,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
@@ -22,39 +21,39 @@ public class TagDaoImpl implements TagDao {
 
     private static final String TAG_NAME = "name";
     private static final String SQL_POPULAR_TAG =
-            "select *\n" +
-            "from tags\n" +
-            "where tags.id = (\n" +
-            "    select tag_id\n" +
-            "    from (select tag_id, count(tag_id) as value_occurrence\n" +
-            "          from (select ct.tag_id\n" +
-            "                from certificates\n" +
-            "                         join orders o on certificates.id = o.certificate_id\n" +
-            "                         join certificate_tag ct on certificates.id = ct.certificate_id\n" +
-            "                where o.user_id = (select user\n" +
-            "                                   from (SELECT user_id as user\n" +
-            "                                         FROM orders\n" +
-            "                                         GROUP BY orders.user_id\n" +
-            "                                         order by sum(price) DESC\n" +
-            "                                         LIMIT 1)\n" +
-            "                                            as mostActiveUser))\n" +
-            "                   as popularTags\n" +
-            "          GROUP BY tag_id\n" +
-            "          order by value_occurrence DESC\n" +
-            "          LIMIT 1\n" +
+            "select * " +
+            "from tags " +
+            "where tags.id = ( " +
+            "    select tag_id " +
+            "    from (select tag_id, count(tag_id) as value_occurrence " +
+            "          from (select ct.tag_id " +
+            "                from certificates " +
+            "                         join user_orders o on certificates.id = o.certificate_id " +
+            "                         join certificate_tag ct on certificates.id = ct.certificate_id " +
+            "                where o.user_id = (select user " +
+            "                                   from (select user_id as user " +
+            "                                         from user_orders " +
+            "                                         group by user_orders.user_id " +
+            "                                         order by sum(price) DESC " +
+            "                                         limit 1) " +
+            "                                            as mostActiveUser)) " +
+            "                   as popularTags " +
+            "          group by tag_id " +
+            "          order by value_occurrence DESC " +
+            "          limit 1 " +
             "         ) as mostPopularTag);";
 
 
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
     public TagDaoImpl(EntityManager em) {
-        this.em = em;
+        this.entityManager = em;
     }
 
     @Override
     public EntityManager getEntityManager() {
-        return em;
+        return entityManager;
     }
 
     @Override

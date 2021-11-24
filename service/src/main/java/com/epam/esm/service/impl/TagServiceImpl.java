@@ -5,8 +5,8 @@ import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.SuchTagAlreadyExistException;
-import com.epam.esm.service.exception.TagNotFoundException;
 import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto findById(Long id) {
-        return dtoMapper.toDTO(tagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id)));
+        return tagDao.getEntityById(id)
+                .map(dtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Tag", id));
     }
 
     @Override
@@ -53,12 +55,14 @@ public class TagServiceImpl implements TagService {
         final List<Certificate> certificateIds = certificateAndTagDao.listOfCertificatesByTags(id);
         certificateIds.forEach((certificate) -> certificateAndTagDao.removeEntity(id, certificate.getId()));
         if (!tagDao.removeEntity(id)) {
-            throw new TagNotFoundException(id);
+            throw new EntityNotFoundException("Tag", id);
         }
     }
 
     @Override
     public TagDto getMostUsefulTagByMostActiveUser() {
-        return  dtoMapper.toDTO(tagDao.getMostUsefulByMostActiveUser().get());
+        return tagDao.getMostUsefulByMostActiveUser()
+                .map(dtoMapper::toDTO)
+                .get();
     }
 }

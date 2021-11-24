@@ -25,11 +25,12 @@ import java.util.List;
 public class TagController {
 
     private final TagService tagService;
+    private final Linker<TagDto> tagDtoLinker;
 
     @GetMapping
     public List<TagDto> getAllTags() {
         List<TagDto> tags = tagService.findAll();
-        tags.forEach(Linker::addLinks);
+        tags.forEach(tagDtoLinker::addLinks);
         return tags;
     }
 
@@ -37,14 +38,14 @@ public class TagController {
     @ResponseStatus(HttpStatus.CREATED)
     public TagDto createTag(@Valid @RequestBody TagDto tag) {
         TagDto createdTag = tagService.create(tag);
-        Linker.addLinks(createdTag);
+        tagDtoLinker.addLinks(createdTag);
         return createdTag;
     }
 
     @GetMapping("/{id}")
     public TagDto getTag(@PathVariable Long id) {
         TagDto tag = tagService.findById(id);
-        Linker.addLinks(tag);
+        tagDtoLinker.addLinks(tag);
         return tag;
     }
 
@@ -57,7 +58,7 @@ public class TagController {
     @GetMapping("/mostUseful")
     TagDto getMostUsefulTag(){
         TagDto mostUsefulTag = tagService.getMostUsefulTagByMostActiveUser();
-        Linker.addLinks(mostUsefulTag);
+        tagDtoLinker.addLinks(mostUsefulTag);
         return mostUsefulTag;
     }
 }

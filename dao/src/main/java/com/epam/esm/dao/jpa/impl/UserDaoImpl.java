@@ -17,27 +17,27 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserDaoImpl implements UserDao {
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
     @Override
     public List<User> listOfAll() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
-        CriteriaQuery<User> userCriteria = cb.createQuery(User.class);
+        CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);
         Root<User> root = userCriteria.from(User.class);
         userCriteria.select(root);
 
-        return em.createQuery(userCriteria).getResultList();
+        return entityManager.createQuery(userCriteria).getResultList();
     }
 
     @Override
     public Optional<User> getById(Long id) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<User> userCriteria = cb.createQuery(User.class);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);
         Root<User> root = userCriteria.from(User.class);
 
-        userCriteria.where(cb.equal(root.get("id"), id));
-        List<User> resultList = em.createQuery(userCriteria).getResultList();
+        userCriteria.where(criteriaBuilder.equal(root.get("id"), id));
+        List<User> resultList = entityManager.createQuery(userCriteria).getResultList();
         if (resultList.isEmpty()) {
             return Optional.empty();
         } else {

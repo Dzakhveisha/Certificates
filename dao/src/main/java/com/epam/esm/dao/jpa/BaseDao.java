@@ -1,7 +1,6 @@
 package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.model.BaseEntity;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;

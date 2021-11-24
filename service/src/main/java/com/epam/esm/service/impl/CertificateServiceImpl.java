@@ -8,8 +8,7 @@ import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.ArgumentNotValidException;
-import com.epam.esm.service.exception.CertificateNotFoundException;
-import com.epam.esm.service.exception.TagNotFoundException;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.CertificateDto;
 import com.epam.esm.service.model.dto.TagDto;
@@ -40,8 +39,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public CertificateDto findById(Long id) {
-        CertificateDto certificate = certificateDtoMapper.toDTO(certificateDao.getEntityById(id)
-                .orElseThrow(() -> new CertificateNotFoundException(id)));
+        CertificateDto certificate = certificateDao.getEntityById(id)
+                .map(certificateDtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         addTags(certificate);
         return certificate;
     }
@@ -73,8 +73,9 @@ public class CertificateServiceImpl implements CertificateService {
         validateCertificate(entity);
         entity.setLastUpdateDate(LocalDateTime.now().format(formatterToString));
         Certificate newCertificateEntity = certificateDtoMapper.toEntity(entity);
-        CertificateDto certificate = certificateDtoMapper.toDTO(certificateDao.updateEntity(id, newCertificateEntity)
-                .orElseThrow(() -> new CertificateNotFoundException(id)));
+        CertificateDto certificate = certificateDao.updateEntity(id, newCertificateEntity)
+                .map(certificateDtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         if (entity.getTags() != null) {
             updateTags(entity.getTags(), certificate);
         } else {
@@ -86,17 +87,18 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public void remove(Long id) {
-        CertificateDto deletedCertificate = certificateDtoMapper.toDTO(certificateDao.getEntityById(id)
-                .orElseThrow(() -> new CertificateNotFoundException(id)));
+        CertificateDto deletedCertificate = certificateDao.getEntityById(id)
+                .map(certificateDtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         deleteTags(deletedCertificate);
         if (!certificateDao.removeEntity(id)) {
-            throw new CertificateNotFoundException(id);
+            throw new EntityNotFoundException("Certificate", id);
         }
     }
 
     @Override
-    public List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, String tagName) {
-        List<CertificateDto> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagName)
+    public List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, List<String> tagNames) {
+        List<CertificateDto> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagNames)
                 .stream()
                 .map(certificateDtoMapper::toDTO)
                 .collect(Collectors.toList());
@@ -111,8 +113,10 @@ public class CertificateServiceImpl implements CertificateService {
         }
         for (TagDto tag : tags) {
             TagDto newTag = getTag(tag);
-            certificateAndTagDao.createEntity(new CertificateAndTag(certificateDtoMapper.toEntity(certificate),
-                    tagDtoMapper.toEntity(newTag)));
+            certificateAndTagDao.createEntity(new CertificateAndTag(
+                    certificateDtoMapper.toEntity(certificate),
+                    tagDtoMapper.toEntity(newTag))
+            );
             certificate.addTag(newTag);
         }
     }
@@ -167,20 +171,26 @@ public class CertificateServiceImpl implements CertificateService {
         }
         if (tag.getId() != null) {
             if (tagDao.getEntityById(tag.getId()).isPresent()) {
-                return tagDtoMapper.toDTO(tagDao.getEntityById(tag.getId()).get());
+                return tagDao.getEntityById(tag.getId())
+                        .map(tagDtoMapper::toDTO)
+                        .get();
             } else {
                 if (tag.getName() != null) {
                     if (!tagDao.getTagByName(tag.getName()).isPresent()) {
                         tagDao.createEntity(tagDtoMapper.toEntity(tag));
                     }
-                    return tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
-                } else throw new TagNotFoundException(tag.getId());
+                    return tagDao.getTagByName(tag.getName())
+                            .map(tagDtoMapper::toDTO)
+                            .get();
+                } else throw new EntityNotFoundException("Certificate", tag.getId());
             }
         } else {
             if (!tagDao.getTagByName(tag.getName()).isPresent()) {
                 tagDao.createEntity(tagDtoMapper.toEntity(tag));
             }
-            return tagDtoMapper.toDTO(tagDao.getTagByName(tag.getName()).get());
+            return tagDao.getTagByName(tag.getName())
+                    .map(tagDtoMapper::toDTO)
+                    .get();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.controller.web;
 
 import com.epam.esm.controller.hateoas.Linker;
+import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.model.dto.OrderDto;
 import com.epam.esm.service.model.dto.UserDto;
@@ -17,40 +18,43 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final OrderService orderService;
+    private final Linker<UserDto> userDtoLinker;
+    private final Linker<OrderDto> orderDtoLinker;
 
     @GetMapping
     public List<UserDto> getUsers() {
         List<UserDto> users = userService.findAll();
-        users.forEach(Linker::addLinks);
+        users.forEach(userDtoLinker::addLinks);
         return users;
     }
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable long id) {
         UserDto user = userService.getById(id);
-        Linker.addLinks(user);
+        userDtoLinker.addLinks(user);
         return user;
     }
 
     @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@PathVariable long id, @Valid @RequestBody OrderDto order) {
-        OrderDto createdOrder = userService.createOrder(id, order);
-        Linker.addLinks(createdOrder);
+        OrderDto createdOrder = orderService.createOrder(id, order);
+        orderDtoLinker.addLinks(createdOrder);
         return createdOrder;
     }
 
     @GetMapping("/{id}/orders")
     public List<OrderDto> getUserOrders(@PathVariable long id) {  // получить данные о заказах пользователя
-        List<OrderDto> userOrders = userService.getUserOrders(id);
-        userOrders.forEach(Linker::addLinks);
+        List<OrderDto> userOrders = orderService.getUserOrders(id);
+        userOrders.forEach(orderDtoLinker::addLinks);
         return userOrders;
     }
 
     @GetMapping("/{id}/orders/{orderId}")
     public OrderDto getUserOrderById(@PathVariable long id, @PathVariable long orderId) {
-        OrderDto userOrder = userService.getUserOrder(id, orderId);
-        Linker.addLinks(userOrder);
+        OrderDto userOrder = orderService.getUserOrder(id, orderId);
+        orderDtoLinker.addLinks(userOrder);
         return userOrder;
     }
 }

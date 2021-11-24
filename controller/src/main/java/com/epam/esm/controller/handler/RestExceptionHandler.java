@@ -1,9 +1,8 @@
 package com.epam.esm.controller.handler;
 
 import com.epam.esm.service.exception.ArgumentNotValidException;
-import com.epam.esm.service.exception.CertificateNotFoundException;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.SuchTagAlreadyExistException;
-import com.epam.esm.service.exception.TagNotFoundException;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -28,16 +27,10 @@ public class RestExceptionHandler {
         return new RestError(e.getMessage(), HttpStatus.BAD_REQUEST, SuchTagAlreadyExistException.CODE);
     }
 
-    @ExceptionHandler({TagNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public RestError HandleTagNotFoundException(TagNotFoundException e) {
-        return new RestError(e.getMessage(), HttpStatus.NOT_FOUND, TagNotFoundException.CODE);
-    }
-
-    @ExceptionHandler({CertificateNotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public RestError HandleCertificateNotFoundException(CertificateNotFoundException e) {
-        return new RestError(e.getMessage(), HttpStatus.NOT_FOUND, CertificateNotFoundException.CODE);
+    public RestError HandleTagNotFoundException(EntityNotFoundException e) {
+        return new RestError(e.getMessage(), HttpStatus.NOT_FOUND, EntityNotFoundException.CODE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +25,15 @@ public class CertificateDaoImpl implements CertificateDao {
     private static final String CERT_LAST_UPDATE_DATE = "lastUpdateDate";
 
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
     public CertificateDaoImpl(EntityManager em) {
-        this.em = em;
+        this.entityManager = em;
     }
 
     @Override
     public EntityManager getEntityManager() {
-        return em;
+        return entityManager;
     }
 
     @Override
@@ -45,22 +44,22 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @Override
     public Optional<Certificate> updateEntity(Long id, Certificate entity) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaUpdate<Certificate> criteriaUpdate = cb.createCriteriaUpdate(Certificate.class);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Certificate> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Certificate.class);
         Root<Certificate> root = criteriaUpdate.from(Certificate.class);
         setValuesForUpdating(entity, criteriaUpdate);
-        criteriaUpdate.where(cb.equal(root.get(CERT_ID), id));
+        criteriaUpdate.where(criteriaBuilder.equal(root.get(CERT_ID), id));
 
-        em.createQuery(criteriaUpdate).executeUpdate();
+        entityManager.createQuery(criteriaUpdate).executeUpdate();
         return this.getEntityById(id);
     }
 
     @Override
-    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, String tagName) {
+    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames) {
         if (!sortBy.equals(CERT_NAME) && !sortBy.equals(CERT_CREATE_DATE)) {
             sortBy = CERT_ID;
         }
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
         Root<Certificate> root = criteriaQuery.from(Certificate.class);
         criteriaQuery.select(root);
@@ -68,11 +67,13 @@ public class CertificateDaoImpl implements CertificateDao {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + partName + "%"));
 
-        if (tagName != null) {
+        if (tagNames != null) {
             Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
-            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(tagName);
+            Expression<Long> countOfTags = criteriaBuilder.count(root);
+            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(tagNames);
             predicates.add(predicateTagsList);
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .having(criteriaBuilder.equal(countOfTags, tagNames.size()))
                     .groupBy(root);
         } else {
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
@@ -82,8 +83,7 @@ public class CertificateDaoImpl implements CertificateDao {
         } else {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
         }
-        //em.createNativeQuery()
-        return em.createQuery(criteriaQuery).getResultList();
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     private void setValuesForUpdating(Certificate entity, CriteriaUpdate criteriaUpdate) {

@@ -25,26 +25,26 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
     private static final String TAG = "tag";
 
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
 
     public CertificateAndTagDaoImpl(EntityManager em) {
-        this.em = em;
+        this.entityManager = em;
     }
 
     public List<CertificateAndTag> listOfAll() {
 
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteria = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteria.from(CertificateAndTag.class);
         criteria.select(root);
 
-        return em.createQuery(criteria).getResultList();
+        return entityManager.createQuery(criteria).getResultList();
     }
 
     @Override
     public List<Tag> listOfTagsByCertificate(Long certificateId) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
@@ -52,7 +52,7 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
         criteriaQuery.select(root);
 
-        return em.createQuery(criteriaQuery).getResultList()
+        return entityManager.createQuery(criteriaQuery).getResultList()
                 .stream()
                 .map(CertificateAndTag::getTag)
                 .collect(Collectors.toList());
@@ -60,7 +60,7 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
 
     @Override
     public List<Certificate> listOfCertificatesByTags(Long tagId) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
@@ -68,7 +68,7 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
         criteriaQuery.select(root);
 
-        return em.createQuery(criteriaQuery).getResultList()
+        return entityManager.createQuery(criteriaQuery).getResultList()
                 .stream()
                 .map(CertificateAndTag::getCertificate)
                 .collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
 
     @Override
     public boolean removeEntity(Long tagId, Long certificateId) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaDelete<CertificateAndTag> criteriaDelete = criteriaBuilder.createCriteriaDelete(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaDelete.from(CertificateAndTag.class);
@@ -84,18 +84,18 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaDelete.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
         criteriaDelete.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
 
-        int rowsDeleted = em.createQuery(criteriaDelete).executeUpdate();
+        int rowsDeleted = entityManager.createQuery(criteriaDelete).executeUpdate();
         return rowsDeleted > 0;
     }
 
     @Override
     public CertificateAndTag createEntity(CertificateAndTag entity) {
-        return em.merge(entity);
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<CertificateAndTag> getEntityByTagAndCertificate(Long certificateId, Long tagId) {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);
         Root<CertificateAndTag> root = criteriaQuery.from(CertificateAndTag.class);
@@ -104,6 +104,6 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
         criteriaQuery.select(root);
 
-        return Optional.ofNullable(em.createQuery(criteriaQuery).getResultList().get(0));
+        return Optional.ofNullable(entityManager.createQuery(criteriaQuery).getResultList().get(0));
     }
 }

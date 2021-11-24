@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 
 @RequiredArgsConstructor
@@ -23,15 +20,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class CertificateController {
 
     private final CertificateService certificateService;
+    private final Linker<CertificateDto> certificateDtoLinker;
 
     @GetMapping
-    public List<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) String tagName,
+    public List<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) List<String> tagNames,
                                                 @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
                                                 @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
                                                 @RequestParam(defaultValue = "ASC", name = "order", required = false) String order) {
 
-        List<CertificateDto> certificates = certificateService.sortAllWithCriteria(sortBy, order, partName, tagName);
-        certificates.forEach((Linker::addLinks));
+        List<CertificateDto> certificates = certificateService.sortAllWithCriteria(sortBy, order, partName, tagNames);
+        certificates.forEach((certificateDtoLinker::addLinks));
         return certificates;
     }
 
@@ -39,14 +37,14 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.CREATED)
     public CertificateDto createCertificate(@Valid @RequestBody CertificateDto certificate) {
         CertificateDto createdCertificate = certificateService.create(certificate);
-        Linker.addLinks(createdCertificate);
+        certificateDtoLinker.addLinks(createdCertificate);
         return createdCertificate;
     }
 
     @GetMapping("/{id}")
     public CertificateDto getCertificate(@PathVariable Long id) {
         CertificateDto certificate = certificateService.findById(id);
-        Linker.addLinks(certificate);
+        certificateDtoLinker.addLinks(certificate);
         return certificate;
     }
 
@@ -60,7 +58,7 @@ public class CertificateController {
     public CertificateDto updateCertificate(@PathVariable Long id,
                                             @RequestBody CertificateDto certificate) {
         CertificateDto updatedCertificate = certificateService.update(id, certificate);
-        Linker.addLinks(updatedCertificate);
+        certificateDtoLinker.addLinks(updatedCertificate);
         return updatedCertificate;
     }
 }

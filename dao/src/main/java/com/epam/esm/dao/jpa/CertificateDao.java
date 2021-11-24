@@ -25,9 +25,9 @@ public interface CertificateDao extends BaseDao<Certificate> {
      * @param sortBy   field, by which all certificates will be sorted
      * @param order    order of sorting (DESC or ASC)
      * @param partName part of name or description of certificate, by which will be searching
-     * @param tagName  name of tag, by which will be certificate's searching
+     * @param tagNames  names of tag, by which will be certificate's searching
      * @return sorted in needed order list of found certificates
      */
-    List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, String tagName);
+    List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames);
 
 }
