@@ -3,12 +3,10 @@ package com.epam.esm.dao.jpa;
 import com.epam.esm.dao.model.BaseEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.validation.constraints.Max;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +31,8 @@ public interface BaseDao<T extends BaseEntity> {
      */
 
     default T createEntity(T entity) {
-        return getEntityManager().merge(entity); //check id (persist?)
+        getEntityManager().persist(entity);
+        return entity;
     }
 
     /**
@@ -64,16 +63,16 @@ public interface BaseDao<T extends BaseEntity> {
      *
      * @return list of all entities from database
      */
-    default List<T> listOfEntities( int pageNumber) {
+    default List<T> listOfEntities(int pageNumber) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteria = criteriaBuilder.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
         criteria.select(root);
 
-       if (getLastPageNumber() < pageNumber){
-               pageNumber = 1;
-       }
+        if (getLastPageNumber() < pageNumber) {
+            pageNumber = 1;
+        }
 
         return getEntityManager().createQuery(criteria)
                 .setFirstResult((pageNumber - 1) * pageSize)

@@ -18,6 +18,7 @@ public interface TagDao extends BaseDao<Tag> {
 
     /**
      * Find the most widely used tag in database of a user with the highest cost of all orders
+     *
      * @return most useful tag
      */
     Optional<Tag> getMostUsefulByMostActiveUser();

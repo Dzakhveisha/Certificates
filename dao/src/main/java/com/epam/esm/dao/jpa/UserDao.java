@@ -1,6 +1,5 @@
 package com.epam.esm.dao.jpa;
 
-import com.epam.esm.dao.model.Order;
 import com.epam.esm.dao.model.User;
 
 import java.util.List;
@@ -17,6 +16,12 @@ public interface UserDao {
      */
     List<User> listOfAll(int pageNumber);
 
+    /**
+     * find user with such id
+     *
+     * @param id id of User
+     * @return user
+     */
     Optional<User> getById(Long id);
 
 }

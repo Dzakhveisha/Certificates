@@ -33,17 +33,6 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         this.entityManager = em;
     }
 
-    public List<CertificateAndTag> listOfAll() {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<CertificateAndTag> criteria = criteriaBuilder.createQuery(CertificateAndTag.class);
-        Root<CertificateAndTag> root = criteria.from(CertificateAndTag.class);
-        criteria.select(root);
-
-        return entityManager.createQuery(criteria).getResultList();
-    }
-
     @Override
     public List<Tag> listOfTagsByCertificate(Long certificateId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -104,7 +93,8 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
 
     @Override
     public CertificateAndTag createEntity(CertificateAndTag entity) {
-        return entityManager.merge(entity);
+        entityManager.persist(entity);
+        return entity;
     }
 
     @Override

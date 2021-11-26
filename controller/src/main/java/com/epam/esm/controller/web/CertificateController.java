@@ -28,7 +28,7 @@ public class CertificateController {
                                                 @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
                                                 @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
                                                 @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,
-                                                @Min(1) @RequestParam(required = false, defaultValue = "1" ) int pageNumber) {
+                                                @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
 
         List<CertificateDto> certificates = certificateService.sortAllWithCriteria(sortBy, order, partName, tagNames, pageNumber);
         certificates.forEach((certificateDtoLinker::addLinks));

@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDto order = orderDao.getById(orderId)
                 .map(orderDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Order", orderId));
-        if (order.getUserId() == userId) {
+        if (order.getUserId().equals(userId)) {
             return order;
         } else {
             throw new EntityNotFoundException("Order", orderId);

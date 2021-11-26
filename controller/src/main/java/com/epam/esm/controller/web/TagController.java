@@ -22,7 +22,7 @@ public class TagController {
     private final Linker<TagDto> tagDtoLinker;
 
     @GetMapping
-    public List<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1" ) int pageNumber) {
+    public List<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         List<TagDto> tags = tagService.findAll(pageNumber);
         tags.forEach(tagDtoLinker::addLinks);
         return tags;
@@ -50,7 +50,7 @@ public class TagController {
     }
 
     @GetMapping("/mostUseful")
-    TagDto getMostUsefulTag(){
+    TagDto getMostUsefulTag() {
         TagDto mostUsefulTag = tagService.getMostUsefulTagByMostActiveUser();
         tagDtoLinker.addLinks(mostUsefulTag);
         return mostUsefulTag;

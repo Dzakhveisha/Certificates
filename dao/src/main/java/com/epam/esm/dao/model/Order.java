@@ -19,7 +19,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -34,11 +34,4 @@ public class Order {
 
     @Column(name = "date")
     private LocalDateTime date;
-
-    public Order(User user, Certificate certificate, long price, LocalDateTime date) {
-        this.user = user;
-        this.certificate = certificate;
-        this.price = price;
-        this.date = date;
-    }
 }

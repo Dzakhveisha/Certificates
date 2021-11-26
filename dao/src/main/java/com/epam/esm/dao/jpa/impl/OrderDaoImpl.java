@@ -29,7 +29,7 @@ public class OrderDaoImpl implements OrderDao {
 
         orderCriteria.where(criteriaBuilder.equal(root.get("user").get("id"), id));
 
-        if (getLastPageNumber(id) < pageNumber){
+        if (getLastPageNumber(id) < pageNumber) {
             pageNumber = 1;
         }
 
@@ -41,7 +41,8 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Order create(Order order) {
-        return entityManager.merge(order);
+        entityManager.persist(order);
+        return order;
     }
 
     @Override

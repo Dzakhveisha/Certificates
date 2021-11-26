@@ -3,7 +3,6 @@ package com.epam.esm.controller.hateoas;
 import com.epam.esm.controller.web.CertificateController;
 import com.epam.esm.controller.web.UserController;
 import com.epam.esm.service.model.dto.OrderDto;
-import org.hibernate.annotations.Cache;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

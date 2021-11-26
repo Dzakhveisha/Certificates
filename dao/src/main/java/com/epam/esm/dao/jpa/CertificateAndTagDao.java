@@ -22,7 +22,6 @@ public interface CertificateAndTagDao {
     List<Tag> listOfTagsByCertificate(Long certificateId);
 
 
-
     /**
      * Get list of certificates, which are contains such tag
      *

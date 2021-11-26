@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class CertificateAndTag {
 
     @EmbeddedId
-    CertificateAndTagId id;
+    private CertificateAndTagId id;
 
     @ManyToOne
     @MapsId("certificateId")

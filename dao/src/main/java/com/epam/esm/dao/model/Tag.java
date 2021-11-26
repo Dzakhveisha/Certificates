@@ -5,8 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Data
 @Entity
@@ -18,9 +19,6 @@ public class Tag extends BaseEntity {
 
     @Column(name = "name")
     private String name;
-
-    @OneToMany(mappedBy = "tag")
-    List<CertificateAndTag> certificateAndTagList;
 
     public Tag(Long id, String name) {
         super(id);

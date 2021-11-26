@@ -2,7 +2,10 @@ package com.epam.esm.dao.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +38,4 @@ public class Certificate extends BaseEntity {
 
     @OneToMany(mappedBy = "certificate")
     private List<CertificateAndTag> certificateAndTagList;
-
-    @OneToMany(mappedBy = "certificate")
-    List<Order> orders;
 }

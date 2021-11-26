@@ -23,22 +23,22 @@ public class RestExceptionHandler {
     @ExceptionHandler(ArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RestError handleArgumentNotValidException(ArgumentNotValidException e) {
-        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + ArgumentNotValidException.CODE, e.getCauseMsg())
-                , HttpStatus.BAD_REQUEST, ArgumentNotValidException.CODE);
+        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + ArgumentNotValidException.CODE,
+                e.getCauseMsg()), HttpStatus.BAD_REQUEST, ArgumentNotValidException.CODE);
     }
 
     @ExceptionHandler(SuchTagAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RestError HandleAlreadyExistException(SuchTagAlreadyExistException e) {
-        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + SuchTagAlreadyExistException.CODE, e.getTagName()),
-                HttpStatus.BAD_REQUEST, SuchTagAlreadyExistException.CODE);
+        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + SuchTagAlreadyExistException.CODE,
+                e.getTagName()), HttpStatus.BAD_REQUEST, SuchTagAlreadyExistException.CODE);
     }
 
     @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public RestError HandleTagNotFoundException(EntityNotFoundException e) {
-        return new RestError(translator.toLocale(HttpStatus.NOT_FOUND.value() + EntityNotFoundException.CODE, e.getEntity(), e.getEntityId())
-                , HttpStatus.NOT_FOUND, EntityNotFoundException.CODE);
+        return new RestError(translator.toLocale(HttpStatus.NOT_FOUND.value() + EntityNotFoundException.CODE,
+                e.getEntity(), e.getEntityId()), HttpStatus.NOT_FOUND, EntityNotFoundException.CODE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -60,7 +60,7 @@ public class RestExceptionHandler {
     public RestError handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         String method = e.getMethod();
         return new RestError(translator.toLocale(HttpStatus.METHOD_NOT_ALLOWED.value() + "-illegalMethod", method),
-            HttpStatus.BAD_REQUEST);
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

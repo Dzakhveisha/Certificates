@@ -29,7 +29,7 @@ public class UserDaoImpl implements UserDao {
         Root<User> root = userCriteria.from(User.class);
         userCriteria.select(root);
 
-        if (getLastPageNumber() < pageNumber){
+        if (getLastPageNumber() < pageNumber) {
             pageNumber = 1;
         }
 

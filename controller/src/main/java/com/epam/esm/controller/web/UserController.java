@@ -24,7 +24,7 @@ public class UserController {
     private final Linker<OrderDto> orderDtoLinker;
 
     @GetMapping
-    public List<UserDto> getUsers(@Min(1) @RequestParam(required = false, defaultValue = "1" ) int pageNumber) {
+    public List<UserDto> getUsers(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         List<UserDto> users = userService.findAll(pageNumber);
         users.forEach(userDtoLinker::addLinks);
         return users;
@@ -47,7 +47,7 @@ public class UserController {
 
     @GetMapping("/{id}/orders")
     public List<OrderDto> getUserOrders(@PathVariable long id,
-                                        @Min(1) @RequestParam(required = false, defaultValue = "1" ) int pageNumber) {
+                                        @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         List<OrderDto> userOrders = orderService.getUserOrders(id, pageNumber);
         userOrders.forEach(orderDtoLinker::addLinks);
         return userOrders;

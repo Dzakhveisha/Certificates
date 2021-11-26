@@ -2,7 +2,6 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.Order;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -84,7 +83,6 @@ public class CertificateDaoImpl implements CertificateDao {
         } else {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
         }
-
 
 
         return entityManager.createQuery(criteriaQuery)
