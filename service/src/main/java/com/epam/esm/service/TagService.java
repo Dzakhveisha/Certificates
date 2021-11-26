@@ -16,10 +16,10 @@ public interface TagService {
 
     /**
      * Find all tags
-     *
+     * @param pageNumber number of page
      * @return list of tags
      */
-    List<TagDto> findAll();
+    List<TagDto> findAll(int pageNumber);
 
     /**
      * Create tag

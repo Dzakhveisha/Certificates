@@ -5061,4 +5061,3 @@ insert into user_orders (user_id, certificate_id, price, date) values (767, 87, 
 insert into user_orders (user_id, certificate_id, price, date) values (394, 160, 238, '2021-07-14T20:41:07Z');
 insert into user_orders (user_id, certificate_id, price, date) values (472, 5, 652, '2021-03-13T02:13:10Z');
 insert into user_orders (user_id, certificate_id, price, date) values (145, 48, 516, '2021-10-07T01:09:35Z');
-

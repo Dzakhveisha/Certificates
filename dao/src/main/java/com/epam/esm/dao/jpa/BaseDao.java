@@ -3,10 +3,12 @@ package com.epam.esm.dao.jpa;
 import com.epam.esm.dao.model.BaseEntity;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.Max;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +18,8 @@ import java.util.Optional;
  * @param <T> entities which DAO operates with
  */
 public interface BaseDao<T extends BaseEntity> {
+
+    Integer pageSize = 10;
 
     EntityManager getEntityManager();
 
@@ -60,14 +64,32 @@ public interface BaseDao<T extends BaseEntity> {
      *
      * @return list of all entities from database
      */
-    default List<T> listOfEntities() {
+    default List<T> listOfEntities( int pageNumber) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteria = criteriaBuilder.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
         criteria.select(root);
 
-        return getEntityManager().createQuery(criteria).getResultList();
+       if (getLastPageNumber() < pageNumber){
+               pageNumber = 1;
+       }
+
+        return getEntityManager().createQuery(criteria)
+                .setFirstResult((pageNumber - 1) * pageSize)
+                .setMaxResults(pageSize)
+                .getResultList();
+    }
+
+    default int getLastPageNumber() {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery countQuery = criteriaBuilder.createQuery();
+        Root<T> root = countQuery.from(getEntityClass());
+        countQuery.select(criteriaBuilder.count(root));
+
+        Long countResult = (long) getEntityManager().createQuery(countQuery).getSingleResult();
+
+        return (int) ((countResult / pageSize) + 1);
     }
 
 

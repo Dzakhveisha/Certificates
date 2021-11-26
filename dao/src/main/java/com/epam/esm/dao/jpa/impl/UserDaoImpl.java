@@ -13,6 +13,8 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.esm.dao.jpa.BaseDao.pageSize;
+
 @Repository
 @AllArgsConstructor
 public class UserDaoImpl implements UserDao {
@@ -20,14 +22,21 @@ public class UserDaoImpl implements UserDao {
     private final EntityManager entityManager;
 
     @Override
-    public List<User> listOfAll() {
+    public List<User> listOfAll(int pageNumber) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);
         Root<User> root = userCriteria.from(User.class);
         userCriteria.select(root);
 
-        return entityManager.createQuery(userCriteria).getResultList();
+        if (getLastPageNumber() < pageNumber){
+            pageNumber = 1;
+        }
+
+        return entityManager.createQuery(userCriteria)
+                .setFirstResult((pageNumber - 1) * pageSize)
+                .setMaxResults(pageSize)
+                .getResultList();
     }
 
     @Override
@@ -43,5 +52,16 @@ public class UserDaoImpl implements UserDao {
         } else {
             return Optional.ofNullable(resultList.get(0));
         }
+    }
+
+    private int getLastPageNumber() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery countQuery = criteriaBuilder.createQuery();
+        Root<User> root = countQuery.from(User.class);
+        countQuery.select(criteriaBuilder.count(root));
+
+        Long countResult = (long) entityManager.createQuery(countQuery).getSingleResult();
+
+        return (int) ((countResult / pageSize) + 1);
     }
 }

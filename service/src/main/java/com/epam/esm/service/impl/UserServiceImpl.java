@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
     private final Mapper<User, UserDto> userDtoMapper;
 
     @Override
-    public List<UserDto> findAll() {
-        return userDao.listOfAll()
+    public List<UserDto> findAll(int pageNumber) {
+        return userDao.listOfAll(pageNumber)
                 .stream()
                 .map(userDtoMapper::toDTO)
                 .collect(Collectors.toList());

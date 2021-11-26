@@ -12,6 +12,7 @@ import java.util.Optional;
  */
 public interface CertificateAndTagDao {
 
+
     /**
      * Get list of tags, which are included in certificate
      *
@@ -19,6 +20,8 @@ public interface CertificateAndTagDao {
      * @return list of tags, which are included in certificate
      */
     List<Tag> listOfTagsByCertificate(Long certificateId);
+
+
 
     /**
      * Get list of certificates, which are contains such tag

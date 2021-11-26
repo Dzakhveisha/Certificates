@@ -2,6 +2,7 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.Order;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +56,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames) {
+    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames, int pageNumber) {
         if (!sortBy.equals(CERT_NAME) && !sortBy.equals(CERT_CREATE_DATE)) {
             sortBy = CERT_ID;
         }
@@ -83,7 +84,13 @@ public class CertificateDaoImpl implements CertificateDao {
         } else {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
         }
-        return entityManager.createQuery(criteriaQuery).getResultList();
+
+
+
+        return entityManager.createQuery(criteriaQuery)
+                .setFirstResult((pageNumber - 1) * pageSize)
+                .setMaxResults(pageSize)
+                .getResultList();
     }
 
     private void setValuesForUpdating(Certificate entity, CriteriaUpdate criteriaUpdate) {

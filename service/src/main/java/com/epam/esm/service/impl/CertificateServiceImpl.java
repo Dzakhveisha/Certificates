@@ -47,8 +47,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDto> findAll() {
-        final List<CertificateDto> certificates = certificateDao.listOfEntities()
+    public List<CertificateDto> findAll(int pageNumber) {
+        final List<CertificateDto> certificates = certificateDao.listOfEntities(pageNumber)
                 .stream()
                 .map(certificateDtoMapper::toDTO)
                 .collect(Collectors.toList());
@@ -97,8 +97,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, List<String> tagNames) {
-        List<CertificateDto> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagNames)
+    public List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, List<String> tagNames, int pageNumber) {
+        List<CertificateDto> certificates = certificateDao.sortListOfEntitiesWithCriteria(sortBy, order, partName, tagNames, pageNumber)
                 .stream()
                 .map(certificateDtoMapper::toDTO)
                 .collect(Collectors.toList());

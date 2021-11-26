@@ -46,8 +46,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getUserOrders(long id) {
-        return orderDao.getOrders(id)
+    public List<OrderDto> getUserOrders(long id, int pageNumber) {
+        return orderDao.getOrders(id, pageNumber)
                 .stream()
                 .map(orderDtoMapper::toDTO)
                 .collect(Collectors.toList());

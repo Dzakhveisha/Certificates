@@ -28,6 +28,6 @@ public interface CertificateDao extends BaseDao<Certificate> {
      * @param tagNames  names of tag, by which will be certificate's searching
      * @return sorted in needed order list of found certificates
      */
-    List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames);
+    List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames, int pageNumber);
 
 }

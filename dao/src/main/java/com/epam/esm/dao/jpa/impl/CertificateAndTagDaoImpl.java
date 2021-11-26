@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.dao.jpa.BaseDao.pageSize;
+
 @Component
 @Data
 public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
@@ -52,10 +54,22 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(CERTIFICATE).get("id"), certificateId));
         criteriaQuery.select(root);
 
-        return entityManager.createQuery(criteriaQuery).getResultList()
+        return entityManager.createQuery(criteriaQuery)
+                .getResultList()
                 .stream()
                 .map(CertificateAndTag::getTag)
                 .collect(Collectors.toList());
+    }
+
+    private int getLastPageNumber() {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery countQuery = criteriaBuilder.createQuery();
+        Root<CertificateAndTag> root = countQuery.from(CertificateAndTag.class);
+        countQuery.select(criteriaBuilder.count(root));
+
+        Long countResult = (long) getEntityManager().createQuery(countQuery).getSingleResult();
+
+        return (int) ((countResult / pageSize) + 1);
     }
 
     @Override

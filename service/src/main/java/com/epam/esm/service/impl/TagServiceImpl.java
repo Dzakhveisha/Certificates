@@ -32,8 +32,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDto> findAll() {
-        return tagDao.listOfEntities()
+    public List<TagDto> findAll(int pageNumber) {
+        return tagDao.listOfEntities(pageNumber)
                 .stream()
                 .map(dtoMapper::toDTO)
                 .collect(Collectors.toList());

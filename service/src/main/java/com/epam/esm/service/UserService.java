@@ -10,7 +10,7 @@ public interface UserService {
      *
      * @return list of users
      */
-    List<UserDto> findAll();
+       List<UserDto> findAll(int pageNumber);
 
     /**
      * Find user by id

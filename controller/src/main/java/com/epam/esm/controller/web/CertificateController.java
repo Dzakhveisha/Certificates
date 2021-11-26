@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 
@@ -26,9 +27,10 @@ public class CertificateController {
     public List<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) List<String> tagNames,
                                                 @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
                                                 @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
-                                                @RequestParam(defaultValue = "ASC", name = "order", required = false) String order) {
+                                                @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,
+                                                @Min(1) @RequestParam(required = false, defaultValue = "1" ) int pageNumber) {
 
-        List<CertificateDto> certificates = certificateService.sortAllWithCriteria(sortBy, order, partName, tagNames);
+        List<CertificateDto> certificates = certificateService.sortAllWithCriteria(sortBy, order, partName, tagNames, pageNumber);
         certificates.forEach((certificateDtoLinker::addLinks));
         return certificates;
     }

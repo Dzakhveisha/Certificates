@@ -17,9 +17,10 @@ public interface CertificateService {
     /**
      * find all certificates
      *
+     * @param  pageNumber number of page
      * @return list of certificates
      */
-    List<CertificateDto> findAll();
+    List<CertificateDto> findAll(int pageNumber);
 
     /**
      * Create certificate
@@ -54,5 +55,5 @@ public interface CertificateService {
      * @param tagNames  names of tag, by which will be certificate's searching
      * @return sorted in needed order list of found certificates
      */
-    List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, List<String> tagNames);
+    List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, List<String> tagNames, int pageNumber);
 }

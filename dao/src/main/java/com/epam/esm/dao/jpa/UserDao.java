@@ -15,7 +15,7 @@ public interface UserDao {
      *
      * @return list of all users from database
      */
-    List<User> listOfAll();
+    List<User> listOfAll(int pageNumber);
 
     Optional<User> getById(Long id);
 

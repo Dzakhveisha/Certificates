@@ -16,7 +16,7 @@ public class UserDtoLinker implements Linker<UserDto> {
                 .withSelfRel());
 
         user.add(linkTo(methodOn(UserController.class)
-                .getUserOrders(user.getId()))
+                .getUserOrders(user.getId(), 1))
                 .withRel("orders"));
     }
 }
