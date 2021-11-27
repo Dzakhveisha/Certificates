@@ -30,7 +30,7 @@ public interface BaseDao<T extends BaseEntity> {
      * @return created entity from database
      */
 
-    default T createEntity(T entity) {
+    default T create(T entity) {
         getEntityManager().persist(entity);
         return entity;
     }
@@ -41,7 +41,7 @@ public interface BaseDao<T extends BaseEntity> {
      * @param id id of needed entity
      * @return needed entity
      */
-    default Optional<T> getEntityById(Long id) {
+    default Optional<T> getById(Long id) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(getEntityClass());
@@ -63,7 +63,7 @@ public interface BaseDao<T extends BaseEntity> {
      *
      * @return list of all entities from database
      */
-    default List<T> listOfEntities(int pageNumber) {
+    default List<T> listOf(int pageNumber) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteria = criteriaBuilder.createQuery(getEntityClass());
@@ -98,7 +98,7 @@ public interface BaseDao<T extends BaseEntity> {
      * @param id id of entity to be deleted
      * @return true, if  successful deletion, else false
      */
-    default boolean removeEntity(Long id) {
+    default boolean remove(Long id) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaDelete<T> criteriaDelete = criteriaBuilder.createCriteriaDelete(getEntityClass());

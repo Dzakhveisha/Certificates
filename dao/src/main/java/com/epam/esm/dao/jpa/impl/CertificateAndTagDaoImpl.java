@@ -5,7 +5,7 @@ import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.dao.model.Tag;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.epam.esm.dao.jpa.BaseDao.pageSize;
 
-@Component
+@Repository
 @Data
 public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
 
@@ -78,7 +78,7 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
     }
 
     @Override
-    public boolean removeEntity(Long tagId, Long certificateId) {
+    public boolean remove(Long tagId, Long certificateId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaDelete<CertificateAndTag> criteriaDelete = criteriaBuilder.createCriteriaDelete(CertificateAndTag.class);
@@ -92,13 +92,13 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
     }
 
     @Override
-    public CertificateAndTag createEntity(CertificateAndTag entity) {
+    public CertificateAndTag create(CertificateAndTag entity) {
         entityManager.persist(entity);
         return entity;
     }
 
     @Override
-    public Optional<CertificateAndTag> getEntityByTagAndCertificate(Long certificateId, Long tagId) {
+    public Optional<CertificateAndTag> getByTagAndCertificate(Long certificateId, Long tagId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<CertificateAndTag> criteriaQuery = criteriaBuilder.createQuery(CertificateAndTag.class);

@@ -37,7 +37,7 @@ public interface CertificateAndTagDao {
      * @param certificateId value of field certificate's Id in removable entity
      * @return true, if successful deletion, else false
      */
-    boolean removeEntity(Long tagId, Long certificateId);
+    boolean remove(Long tagId, Long certificateId);
 
     /**
      * Create new entity in database
@@ -45,7 +45,7 @@ public interface CertificateAndTagDao {
      * @param entity CertificateAnsTag entity for creating
      * @return created entity from database
      */
-    CertificateAndTag createEntity(CertificateAndTag entity);
+    CertificateAndTag create(CertificateAndTag entity);
 
     /**
      * Get entity by it's tag_id and certificate_id from database
@@ -54,5 +54,5 @@ public interface CertificateAndTagDao {
      * @param tag_id         value of field tag's Id in needed entity
      * @return return needed entity
      */
-    Optional<CertificateAndTag> getEntityByTagAndCertificate(Long certificate_id, Long tag_id);
+    Optional<CertificateAndTag> getByTagAndCertificate(Long certificate_id, Long tag_id);
 }

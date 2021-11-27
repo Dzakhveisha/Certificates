@@ -14,7 +14,7 @@ public interface UserDao {
      *
      * @return list of all users from database
      */
-    List<User> listOfAll(int pageNumber);
+    List<User> listOf(int pageNumber);
 
     /**
      * find user with such id

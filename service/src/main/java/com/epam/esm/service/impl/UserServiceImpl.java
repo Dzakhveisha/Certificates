@@ -1,6 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jpa.impl.UserDaoImpl;
+import com.epam.esm.dao.jpa.UserDao;
 import com.epam.esm.dao.model.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserDaoImpl userDao;
+    private final UserDao userDao;
     private final Mapper<User, UserDto> userDtoMapper;
 
     @Override
     public List<UserDto> findAll(int pageNumber) {
-        return userDao.listOfAll(pageNumber)
+        return userDao.listOf(pageNumber)
                 .stream()
                 .map(userDtoMapper::toDTO)
                 .collect(Collectors.toList());

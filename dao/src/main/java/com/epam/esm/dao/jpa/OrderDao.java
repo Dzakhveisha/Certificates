@@ -16,7 +16,7 @@ public interface OrderDao {
      * @param pageNumber number of page
      * @return orders
      */
-    List<Order> getOrders(long id, int pageNumber);
+    List<Order> listOf(long id, int pageNumber);
 
     /**
      * create new order

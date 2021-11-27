@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto createOrder(long userId, OrderDto order) {
         order.setDate(LocalDateTime.now());
 
-        Certificate certificate = certificateDao.getEntityById(order.getCertificateId())
+        Certificate certificate = certificateDao.getById(order.getCertificateId())
                 .orElseThrow(() -> new EntityNotFoundException("Certificate", order.getCertificateId()));
         order.setPrice(certificate.getPrice());
         User user = userDao.getById(userId).orElseThrow(() -> new EntityNotFoundException("User", userId));
@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> getUserOrders(long id, int pageNumber) {
-        return orderDao.getOrders(id, pageNumber)
+        return orderDao.listOf(id, pageNumber)
                 .stream()
                 .map(orderDtoMapper::toDTO)
                 .collect(Collectors.toList());

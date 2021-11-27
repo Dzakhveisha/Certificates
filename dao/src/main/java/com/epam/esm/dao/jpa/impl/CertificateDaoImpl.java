@@ -2,17 +2,24 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.Criteria;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 @Data
 public class CertificateDaoImpl implements CertificateDao {
 
@@ -43,7 +50,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
 
     @Override
-    public Optional<Certificate> updateEntity(Long id, Certificate entity) {
+    public Optional<Certificate> update(Long id, Certificate entity) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<Certificate> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Certificate.class);
         Root<Certificate> root = criteriaUpdate.from(Certificate.class);
@@ -51,13 +58,13 @@ public class CertificateDaoImpl implements CertificateDao {
         criteriaUpdate.where(criteriaBuilder.equal(root.get(CERT_ID), id));
 
         entityManager.createQuery(criteriaUpdate).executeUpdate();
-        return this.getEntityById(id);
+        return this.getById(id);
     }
 
     @Override
-    public List<Certificate> sortListOfEntitiesWithCriteria(String sortBy, String order, String partName, List<String> tagNames, int pageNumber) {
-        if (!sortBy.equals(CERT_NAME) && !sortBy.equals(CERT_CREATE_DATE)) {
-            sortBy = CERT_ID;
+    public List<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber) {
+        if (!criteria.getSortBy().equals(CERT_NAME) && !criteria.getSortBy().equals(CERT_CREATE_DATE)) {
+            criteria.setSortBy(CERT_ID);
         }
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
@@ -65,25 +72,24 @@ public class CertificateDaoImpl implements CertificateDao {
         criteriaQuery.select(root);
 
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + partName + "%"));
+        predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + criteria.getPartName() + "%"));
 
-        if (tagNames != null) {
+        if (criteria.getTagNames() != null) {
             Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
             Expression<Long> countOfTags = criteriaBuilder.count(root);
-            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(tagNames);
+            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(criteria.getTagNames());
             predicates.add(predicateTagsList);
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
-                    .having(criteriaBuilder.equal(countOfTags, tagNames.size()))
+                    .having(criteriaBuilder.equal(countOfTags, criteria.getTagNames().size()))
                     .groupBy(root);
         } else {
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         }
-        if (order.equals("DESC")) {
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get(sortBy)));
+        if (criteria.getOrder().equals("DESC")) {
+            criteriaQuery.orderBy(criteriaBuilder.desc(root.get(criteria.getSortBy())));
         } else {
-            criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortBy)));
+            criteriaQuery.orderBy(criteriaBuilder.asc(root.get(criteria.getSortBy())));
         }
-
 
         return entityManager.createQuery(criteriaQuery)
                 .setFirstResult((pageNumber - 1) * pageSize)

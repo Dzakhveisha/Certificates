@@ -6,7 +6,7 @@ import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.EntityNotFoundException;
-import com.epam.esm.service.exception.SuchTagAlreadyExistException;
+import com.epam.esm.service.exception.SuchEntityAlreadyExistException;
 import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +26,14 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto findById(Long id) {
-        return tagDao.getEntityById(id)
+        return tagDao.getById(id)
                 .map(dtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Tag", id));
     }
 
     @Override
     public List<TagDto> findAll(int pageNumber) {
-        return tagDao.listOfEntities(pageNumber)
+        return tagDao.listOf(pageNumber)
                 .stream()
                 .map(dtoMapper::toDTO)
                 .collect(Collectors.toList());
@@ -42,19 +42,19 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public TagDto create(TagDto entity) {
-        if (!tagDao.getTagByName(entity.getName()).isPresent()) {
+        if (!tagDao.getByName(entity.getName()).isPresent()) {
             return dtoMapper.toDTO(tagDao
-                    .createEntity(dtoMapper.toEntity(entity)));
+                    .create(dtoMapper.toEntity(entity)));
         }
-        throw new SuchTagAlreadyExistException(entity.getName());
+        throw new SuchEntityAlreadyExistException(entity.getName());
     }
 
     @Transactional
     @Override
     public void remove(Long id) {
         final List<Certificate> certificateIds = certificateAndTagDao.listOfCertificatesByTags(id);
-        certificateIds.forEach((certificate) -> certificateAndTagDao.removeEntity(id, certificate.getId()));
-        if (!tagDao.removeEntity(id)) {
+        certificateIds.forEach((certificate) -> certificateAndTagDao.remove(id, certificate.getId()));
+        if (!tagDao.remove(id)) {
             throw new EntityNotFoundException("Tag", id);
         }
     }
@@ -63,6 +63,6 @@ public class TagServiceImpl implements TagService {
     public TagDto getMostUsefulTagByMostActiveUser() {
         return tagDao.getMostUsefulByMostActiveUser()
                 .map(dtoMapper::toDTO)
-                .get();
+                .orElseThrow(() -> new EntityNotFoundException("Tag"));
     }
 }

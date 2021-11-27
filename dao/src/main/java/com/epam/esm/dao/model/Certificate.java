@@ -1,6 +1,10 @@
 package com.epam.esm.dao.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,4 +42,14 @@ public class Certificate extends BaseEntity {
 
     @OneToMany(mappedBy = "certificate")
     private List<CertificateAndTag> certificateAndTagList;
+
+    public Certificate(long id, String name, String description, Long price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
 }

@@ -22,7 +22,7 @@ public class UserDaoImpl implements UserDao {
     private final EntityManager entityManager;
 
     @Override
-    public List<User> listOfAll(int pageNumber) {
+    public List<User> listOf(int pageNumber) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);

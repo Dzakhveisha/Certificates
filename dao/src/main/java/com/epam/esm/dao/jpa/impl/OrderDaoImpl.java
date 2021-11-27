@@ -22,7 +22,7 @@ public class OrderDaoImpl implements OrderDao {
     private final EntityManager entityManager;
 
     @Override
-    public List<Order> getOrders(long id, int pageNumber) {
+    public List<Order> listOf(long id, int pageNumber) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> orderCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = orderCriteria.from(Order.class);

@@ -3,7 +3,7 @@ package com.epam.esm.dao.jpa.impl;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Tag;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-@Component
+@Repository
 @Data
 public class TagDaoImpl implements TagDao {
 
@@ -62,7 +62,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public Optional<Tag> getTagByName(String name) {
+    public Optional<Tag> getByName(String name) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
