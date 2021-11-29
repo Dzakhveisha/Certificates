@@ -1,6 +1,7 @@
 package com.epam.esm.controller.hateoas;
 
 import com.epam.esm.controller.web.TagController;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.TagDto;
 import org.springframework.stereotype.Component;
 
@@ -14,5 +15,19 @@ public class TagDtoLinker implements Linker<TagDto> {
         tag.add(linkTo(methodOn(TagController.class)
                 .getTag(tag.getId()))
                 .withSelfRel());
+    }
+
+    @Override
+    public void addPaginationLinks(PageOfEntities<TagDto> page) {
+        if (page.getCurPageNumber() > 1) {
+            page.add(linkTo(methodOn(TagController.class)
+                    .getAllTags(page.getCurPageNumber() - 1))
+                    .withRel("PrevPage"));
+        }
+        if (page.getCurPageNumber() < page.getCountOfPages()) {
+            page.add(linkTo(methodOn(TagController.class)
+                    .getAllTags(page.getCurPageNumber() + 1))
+                    .withRel("NextPage"));
+        }
     }
 }

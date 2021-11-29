@@ -58,8 +58,8 @@ public class UserDaoImpl implements UserDao {
         Root<User> root = countQuery.from(User.class);
         countQuery.select(criteriaBuilder.count(root));
 
-        Long countResult = (long) entityManager.createQuery(countQuery).getSingleResult();
+        Long countResult = (Long) entityManager.createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
 
-        return (int) ((countResult / pageSize) + 1);
+        return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
     }
 }

@@ -41,8 +41,10 @@ public class CertificateController {
                                                           @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,
                                                           @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
 
-        PageOfEntities<CertificateDto> pageOfCertificates = certificateService.sortAllWithCriteria(new Criteria(sortBy, order, partName, tagNames), pageNumber);
+        Criteria criteria = new Criteria(sortBy, order, partName, tagNames);
+        PageOfEntities<CertificateDto> pageOfCertificates = certificateService.sortAllWithCriteria(criteria, pageNumber);
         pageOfCertificates.getCurPage().forEach((certificateDtoLinker::addLinks));
+        certificateDtoLinker.addPaginationLinks(pageOfCertificates, criteria);
         return pageOfCertificates;
     }
 

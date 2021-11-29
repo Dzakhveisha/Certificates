@@ -84,9 +84,9 @@ public interface BaseDao<T extends BaseEntity> {
         Root<T> root = countQuery.from(getEntityClass());
         countQuery.select(criteriaBuilder.count(root));
 
-        Long countResult = (long) getEntityManager().createQuery(countQuery).getSingleResult();
+        Long countResult = (Long) getEntityManager().createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
 
-        return (int) ((countResult / pageSize) + 1);
+        return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
     }
 
 

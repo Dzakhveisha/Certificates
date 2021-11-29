@@ -1,6 +1,7 @@
 package com.epam.esm.controller.hateoas;
 
 import com.epam.esm.controller.web.UserController;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.UserDto;
 import org.springframework.stereotype.Component;
 
@@ -18,5 +19,19 @@ public class UserDtoLinker implements Linker<UserDto> {
         user.add(linkTo(methodOn(UserController.class)
                 .getUserOrders(user.getId(), 1))
                 .withRel("orders"));
+    }
+
+    @Override
+    public void addPaginationLinks(PageOfEntities<UserDto> page) {
+        if (page.getCurPageNumber() > 1) {
+            page.add(linkTo(methodOn(UserController.class)
+                    .getUsers(page.getCurPageNumber() - 1))
+                    .withRel("PrevPage"));
+        }
+        if (page.getCurPageNumber() < page.getCountOfPages()) {
+            page.add(linkTo(methodOn(UserController.class)
+                    .getUsers(page.getCurPageNumber() + 1))
+                    .withRel("NextPage"));
+        }
     }
 }

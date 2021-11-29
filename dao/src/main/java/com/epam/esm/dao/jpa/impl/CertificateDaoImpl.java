@@ -120,8 +120,9 @@ public class CertificateDaoImpl implements CertificateDao {
             countQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         }
 
-        Integer countResult = (int) getEntityManager().createQuery(countQuery).getResultList().stream().findFirst().orElse(0);
-        return (countResult / pageSize) + 1;
+        Long countResult = (Long) entityManager.createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
+        return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
+
     }
 
     private void setValuesForUpdating(Certificate entity, CriteriaUpdate<Certificate> criteriaUpdate) {

@@ -33,6 +33,7 @@ public class TagController {
     public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
         tagsPage.getCurPage().forEach(tagDtoLinker::addLinks);
+        tagDtoLinker.addPaginationLinks(tagsPage);
         return tagsPage;
     }
 

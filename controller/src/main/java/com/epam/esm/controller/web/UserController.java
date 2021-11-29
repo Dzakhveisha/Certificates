@@ -34,6 +34,7 @@ public class UserController {
     public PageOfEntities<UserDto> getUsers(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<UserDto> usersPage = userService.findAll(pageNumber);
         usersPage.getCurPage().forEach(userDtoLinker::addLinks);
+        userDtoLinker.addPaginationLinks(usersPage);
         return usersPage;
     }
 
@@ -57,6 +58,7 @@ public class UserController {
                                                   @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<OrderDto> userOrdersPage = orderService.getUserOrders(id, pageNumber);
         userOrdersPage.getCurPage().forEach(orderDtoLinker::addLinks);
+        orderDtoLinker.addPaginationLinks(userOrdersPage);
         return userOrdersPage;
     }
 
