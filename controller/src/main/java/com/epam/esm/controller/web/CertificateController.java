@@ -2,9 +2,10 @@ package com.epam.esm.controller.web;
 
 
 import com.epam.esm.controller.hateoas.Linker;
+import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.model.dto.CertificateDto;
-import com.epam.esm.dao.model.Criteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -34,15 +35,15 @@ public class CertificateController {
     private final Linker<CertificateDto> certificateDtoLinker;
 
     @GetMapping
-    public List<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) List<String> tagNames,
-                                                @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
-                                                @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
-                                                @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,
-                                                @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
+    public PageOfEntities<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) List<String> tagNames,
+                                                          @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
+                                                          @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
+                                                          @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,
+                                                          @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
 
-        List<CertificateDto> certificates = certificateService.sortAllWithCriteria(new Criteria(sortBy, order, partName, tagNames), pageNumber);
-        certificates.forEach((certificateDtoLinker::addLinks));
-        return certificates;
+        PageOfEntities<CertificateDto> pageOfCertificates = certificateService.sortAllWithCriteria(new Criteria(sortBy, order, partName, tagNames), pageNumber);
+        pageOfCertificates.getCurPage().forEach((certificateDtoLinker::addLinks));
+        return pageOfCertificates;
     }
 
     @PostMapping

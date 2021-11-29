@@ -5,6 +5,7 @@ import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.UserDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Order;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,11 +46,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getUserOrders(long id, int pageNumber) {
-        return orderDao.listOf(id, pageNumber)
-                .stream()
-                .map(orderDtoMapper::toDTO)
-                .collect(Collectors.toList());
+    public PageOfEntities<OrderDto> getUserOrders(long id, int pageNumber) {
+        PageOfEntities<Order> orderPage = orderDao.listOf(id, pageNumber);
+        return new PageOfEntities<>(orderPage.getCountOfPages(), orderPage.getCurPageNumber(),
+                orderPage.getCurPage()
+                        .stream()
+                        .map(orderDtoMapper::toDTO)
+                        .collect(Collectors.toList()));
     }
 
     @Override

@@ -4,12 +4,13 @@ import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
 import com.epam.esm.service.mapper.TagDtoMapper;
 import com.epam.esm.service.model.dto.CertificateDto;
-import com.epam.esm.dao.model.Criteria;
 import com.epam.esm.service.model.dto.TagDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,11 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -110,10 +107,11 @@ class CertificateServiceImplTest {
 
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(firstCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(secondCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
-        Mockito.when(certificateDao.listOf(1)).thenReturn(certificatesEntities);
+        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1, certificatesEntities));
 
-        List<CertificateDto> actual = certificateService.findAll(1);
-        assertEquals(certificatesDto, actual);
+        PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
+        List<CertificateDto> actualList = actual.getCurPage();
+        assertEquals(certificatesDto, actualList);
     }
 
     @Test
@@ -121,10 +119,11 @@ class CertificateServiceImplTest {
         List<CertificateDto> certificatesDto = Collections.emptyList();
         List<Certificate> certificates = Collections.emptyList();
 
-        Mockito.when(certificateDao.listOf(1)).thenReturn(certificates);
-        List<CertificateDto> actual = certificateService.findAll(1);
+        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<Certificate>(1,1, certificates));
+        PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
+        List<CertificateDto> actualList = actual.getCurPage();
 
-        assertEquals(certificatesDto, actual);
+        assertEquals(certificatesDto, actualList);
     }
 
     @Test
@@ -197,12 +196,13 @@ class CertificateServiceImplTest {
         List<Certificate> certificates = new ArrayList<>(Arrays.asList(CERTIFICATES[1], CERTIFICATES[0]));
 
         Mockito.when(certificateDao.sortListWithCriteria(new Criteria("name", "DESK", "certificate",
-                Arrays.asList(TAGS_DTO[0].getName())), 1)).thenReturn(certificates);
+                Arrays.asList(TAGS_DTO[0].getName())), 1)).thenReturn(new PageOfEntities<>(1,1,certificates));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(0).getId())).thenReturn(Arrays.asList(TAGS[0]));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(1).getId())).thenReturn(Arrays.asList(TAGS[0]));
 
-        List<CertificateDto> actual = certificateService.sortAllWithCriteria(new Criteria("name", "DESK", "certificate",
+        PageOfEntities<CertificateDto> actualPage = certificateService.sortAllWithCriteria(new Criteria("name", "DESK", "certificate",
                 Arrays.asList(TAGS_DTO[0].getName())), 1);
+        List<CertificateDto> actual = actualPage.getCurPage();
 
         assertEquals(certificatesDto, actual);
     }

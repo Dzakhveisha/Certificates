@@ -1,6 +1,7 @@
 package com.epam.esm.controller.web;
 
 import com.epam.esm.controller.hateoas.Linker;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,10 +30,10 @@ public class TagController {
     private final Linker<TagDto> tagDtoLinker;
 
     @GetMapping
-    public List<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
-        List<TagDto> tags = tagService.findAll(pageNumber);
-        tags.forEach(tagDtoLinker::addLinks);
-        return tags;
+    public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
+        PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
+        tagsPage.getCurPage().forEach(tagDtoLinker::addLinks);
+        return tagsPage;
     }
 
     @PostMapping

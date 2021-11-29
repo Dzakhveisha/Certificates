@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -32,11 +33,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDto> findAll(int pageNumber) {
-        return tagDao.listOf(pageNumber)
-                .stream()
-                .map(dtoMapper::toDTO)
-                .collect(Collectors.toList());
+    public PageOfEntities<TagDto> findAll(int pageNumber) {
+        PageOfEntities<Tag> page = tagDao.listOf(pageNumber);
+        return new PageOfEntities<>(page.getCountOfPages(),
+                page.getCurPageNumber(),
+                page.getCurPage()
+                        .stream()
+                        .map(dtoMapper::toDTO)
+                        .collect(Collectors.toList()));
     }
 
     @Transactional

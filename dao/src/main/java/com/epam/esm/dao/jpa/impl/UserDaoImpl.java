@@ -1,6 +1,7 @@
 package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.UserDao;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -22,21 +23,18 @@ public class UserDaoImpl implements UserDao {
     private final EntityManager entityManager;
 
     @Override
-    public List<User> listOf(int pageNumber) {
+    public PageOfEntities<User> listOf(int pageNumber) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);
         Root<User> root = userCriteria.from(User.class);
         userCriteria.select(root);
 
-        if (getLastPageNumber() < pageNumber) {
-            pageNumber = 1;
-        }
-
-        return entityManager.createQuery(userCriteria)
-                .setFirstResult((pageNumber - 1) * pageSize)
-                .setMaxResults(pageSize)
-                .getResultList();
+        return new PageOfEntities<>(getCountOfPages(), pageNumber,
+                entityManager.createQuery(userCriteria)
+                        .setFirstResult((pageNumber - 1) * pageSize)
+                        .setMaxResults(pageSize)
+                        .getResultList());
     }
 
     @Override
@@ -54,7 +52,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private int getLastPageNumber() {
+    private int getCountOfPages() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery countQuery = criteriaBuilder.createQuery();
         Root<User> root = countQuery.from(User.class);

@@ -2,9 +2,8 @@ package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 
-
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,11 +21,11 @@ public interface CertificateDao extends BaseDao<Certificate> {
     Optional<Certificate> update(Long id, Certificate entity);
 
     /**
-     * Get list of certificate, sorted by sortBy field with needed order, which searching by part of name and tag name in database
+     * Get page of certificate, sorted by sortBy field with needed order, which searching by part of name and tag name in database
      *
      * @param criteria criteria with all parameters for search and sort
-     * @return sorted in needed order list of found certificates
+     * @return page of sorted in needed order list of found certificates
      */
-    List<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber);
+    PageOfEntities<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber);
 
 }

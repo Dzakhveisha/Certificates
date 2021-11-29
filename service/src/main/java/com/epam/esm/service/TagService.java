@@ -1,8 +1,7 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.TagDto;
-
-import java.util.List;
 
 public interface TagService {
 
@@ -15,11 +14,12 @@ public interface TagService {
     TagDto findById(Long id);
 
     /**
-     * Find all tags
+     * Find page of all tags
+     *
      * @param pageNumber number of page
-     * @return list of tags
+     * @return page of tags
      */
-    List<TagDto> findAll(int pageNumber);
+    PageOfEntities<TagDto> findAll(int pageNumber);
 
     /**
      * Create tag
@@ -38,6 +38,7 @@ public interface TagService {
 
     /**
      * Find the most widely used tag of a user with the highest cost of all orders
+     *
      * @return the most useful tag
      */
     TagDto getMostUsefulTagByMostActiveUser();

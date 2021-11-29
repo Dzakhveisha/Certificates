@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.jpa.UserDao;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.UserDtoMapper;
@@ -49,8 +50,9 @@ class UserServiceImplTest {
         List<UserDto> usersDto = Arrays.asList(USERS_DTO);
         List<User> users = Arrays.asList(USERS);
 
-        Mockito.when(userDao.listOf(1)).thenReturn(users);
-        List<UserDto> actual = userService.findAll(1);
+        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,users));
+        PageOfEntities<UserDto> all = userService.findAll(1);
+        List<UserDto> actual = all.getCurPage();
 
         assertEquals(usersDto, actual);
     }
@@ -60,8 +62,9 @@ class UserServiceImplTest {
         List<UserDto> usersDto = Collections.emptyList();
         List<User> users = Collections.emptyList();
 
-        Mockito.when(userDao.listOf(1)).thenReturn(users);
-        List<UserDto> actual = userService.findAll(1);
+        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,users));
+        PageOfEntities<UserDto> all = userService.findAll(1);
+        List<UserDto> actual = all.getCurPage();
 
         assertEquals(usersDto, actual);
     }

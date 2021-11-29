@@ -3,10 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.UserDao;
-import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.Order;
-import com.epam.esm.dao.model.Tag;
-import com.epam.esm.dao.model.User;
+import com.epam.esm.dao.model.*;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.OrderDtoMapper;
 import com.epam.esm.service.mapper.UserDtoMapper;
@@ -116,8 +113,9 @@ class OrderServiceImplTest {
         List<OrderDto> ordersDto = Arrays.asList(ORDERS_DTO[0], ORDERS_DTO[2]);
         List<Order> orders = Arrays.asList(ORDERS[0], ORDERS[2]);
 
-        Mockito.when(orderDao.listOf(2L, 1)).thenReturn(orders);
-        List<OrderDto> actual = orderService.getUserOrders(2L,1);
+        Mockito.when(orderDao.listOf(2L, 1)).thenReturn(new PageOfEntities<>(1,1,orders));
+        PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(2L, 1);
+        List<OrderDto> actual = userOrders.getCurPage();
 
         assertEquals(ordersDto, actual);
     }
@@ -127,8 +125,9 @@ class OrderServiceImplTest {
         List<OrderDto> ordersDto = Collections.emptyList();
         List<Order> orders = Collections.emptyList();
 
-        Mockito.when(orderDao.listOf(3L, 1)).thenReturn(orders);
-        List<OrderDto> actual = orderService.getUserOrders(3L,1);
+        Mockito.when(orderDao.listOf(3L, 1)).thenReturn(new PageOfEntities<>(1,1,orders));
+        PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(3L, 1);
+        List<OrderDto> actual = userOrders.getCurPage();
 
         assertEquals(ordersDto, actual);
     }

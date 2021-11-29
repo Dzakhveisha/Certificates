@@ -2,6 +2,7 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.model.Order;
+import com.epam.esm.dao.model.PageOfEntities;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,21 +23,18 @@ public class OrderDaoImpl implements OrderDao {
     private final EntityManager entityManager;
 
     @Override
-    public List<Order> listOf(long id, int pageNumber) {
+    public PageOfEntities<Order> listOf(long id, int pageNumber) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> orderCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = orderCriteria.from(Order.class);
 
         orderCriteria.where(criteriaBuilder.equal(root.get("user").get("id"), id));
 
-        if (getLastPageNumber(id) < pageNumber) {
-            pageNumber = 1;
-        }
-
-        return entityManager.createQuery(orderCriteria)
-                .setFirstResult((pageNumber - 1) * pageSize)
-                .setMaxResults(pageSize)
-                .getResultList();
+        return new PageOfEntities<>(getCountOfPages(id), pageNumber,
+                entityManager.createQuery(orderCriteria)
+                        .setFirstResult((pageNumber - 1) * pageSize)
+                        .setMaxResults(pageSize)
+                        .getResultList());
     }
 
     @Override
@@ -60,7 +58,7 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
-    private int getLastPageNumber(long id) {
+    private int getCountOfPages(long id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery countQuery = criteriaBuilder.createQuery();
         Root<Order> root = countQuery.from(Order.class);

@@ -1,6 +1,7 @@
 package com.epam.esm.controller.web;
 
 import com.epam.esm.controller.hateoas.Linker;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.model.dto.OrderDto;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,10 +31,10 @@ public class UserController {
     private final Linker<OrderDto> orderDtoLinker;
 
     @GetMapping
-    public List<UserDto> getUsers(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
-        List<UserDto> users = userService.findAll(pageNumber);
-        users.forEach(userDtoLinker::addLinks);
-        return users;
+    public PageOfEntities<UserDto> getUsers(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
+        PageOfEntities<UserDto> usersPage = userService.findAll(pageNumber);
+        usersPage.getCurPage().forEach(userDtoLinker::addLinks);
+        return usersPage;
     }
 
     @GetMapping("/{id}")
@@ -53,11 +53,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}/orders")
-    public List<OrderDto> getUserOrders(@PathVariable long id,
-                                        @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
-        List<OrderDto> userOrders = orderService.getUserOrders(id, pageNumber);
-        userOrders.forEach(orderDtoLinker::addLinks);
-        return userOrders;
+    public PageOfEntities<OrderDto> getUserOrders(@PathVariable long id,
+                                                  @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
+        PageOfEntities<OrderDto> userOrdersPage = orderService.getUserOrders(id, pageNumber);
+        userOrdersPage.getCurPage().forEach(orderDtoLinker::addLinks);
+        return userOrdersPage;
     }
 
     @GetMapping("/{id}/orders/{orderId}")

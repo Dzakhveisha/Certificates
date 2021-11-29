@@ -5,13 +5,14 @@ import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
+import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.CertificateDto;
-import com.epam.esm.dao.model.Criteria;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,13 +49,16 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDto> findAll(int pageNumber) {
-        final List<CertificateDto> certificates = certificateDao.listOf(pageNumber)
-                .stream()
-                .map(certificateDtoMapper::toDTO)
-                .collect(Collectors.toList());
-        certificates.forEach(this::addTags);
-        return certificates;
+    public PageOfEntities<CertificateDto> findAll(int pageNumber) {
+        PageOfEntities<Certificate> pageOfCertificates = certificateDao.listOf(pageNumber);
+        PageOfEntities<CertificateDto> pageOfDtoCertificates = new PageOfEntities<>(pageOfCertificates.getCountOfPages(),
+                pageOfCertificates.getCurPageNumber(),
+                pageOfCertificates.getCurPage()
+                        .stream()
+                        .map(certificateDtoMapper::toDTO)
+                        .collect(Collectors.toList()));
+        pageOfDtoCertificates.getCurPage().forEach(this::addTags);
+        return pageOfDtoCertificates;
     }
 
     @Transactional
@@ -98,13 +102,16 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber) {
-        List<CertificateDto> certificates = certificateDao.sortListWithCriteria(criteria, pageNumber)
-                .stream()
-                .map(certificateDtoMapper::toDTO)
-                .collect(Collectors.toList());
-        certificates.forEach(this::addTags);
-        return certificates;
+    public PageOfEntities<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber) {
+        PageOfEntities<Certificate> certificatePage = certificateDao.sortListWithCriteria(criteria, pageNumber);
+        PageOfEntities<CertificateDto> certificatesDtoPage = new PageOfEntities<>(
+                certificatePage.getCountOfPages(), certificatePage.getCurPageNumber(),
+                certificatePage.getCurPage()
+                        .stream()
+                        .map(certificateDtoMapper::toDTO)
+                        .collect(Collectors.toList()));
+        certificatesDtoPage.getCurPage().forEach(this::addTags);
+        return certificatesDtoPage;
     }
 
     private void createTags(List<TagDto> tags, CertificateDto certificate) {

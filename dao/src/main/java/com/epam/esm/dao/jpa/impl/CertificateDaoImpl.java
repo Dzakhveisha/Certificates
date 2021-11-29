@@ -3,6 +3,7 @@ package com.epam.esm.dao.jpa.impl;
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 import lombok.Data;
 import org.springframework.stereotype.Repository;
 
@@ -62,7 +63,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber) {
+    public PageOfEntities<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber) {
         if (!criteria.getSortBy().equals(CERT_NAME) && !criteria.getSortBy().equals(CERT_CREATE_DATE)) {
             criteria.setSortBy(CERT_ID);
         }
@@ -91,13 +92,39 @@ public class CertificateDaoImpl implements CertificateDao {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(criteria.getSortBy())));
         }
 
-        return entityManager.createQuery(criteriaQuery)
-                .setFirstResult((pageNumber - 1) * pageSize)
-                .setMaxResults(pageSize)
-                .getResultList();
+        return new PageOfEntities<>(countOfPages(criteria), pageNumber,
+                entityManager.createQuery(criteriaQuery)
+                        .setFirstResult((pageNumber - 1) * pageSize)
+                        .setMaxResults(pageSize)
+                        .getResultList());
     }
 
-    private void setValuesForUpdating(Certificate entity, CriteriaUpdate criteriaUpdate) {
+    private Integer countOfPages(Criteria criteria) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Object> countQuery = criteriaBuilder.createQuery();
+        Root<Certificate> root = countQuery.from(Certificate.class);
+        countQuery.select(criteriaBuilder.count(root));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + criteria.getPartName() + "%"));
+
+        if (criteria.getTagNames() != null) {
+            Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
+            Expression<Long> countOfTags = criteriaBuilder.count(root);
+            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(criteria.getTagNames());
+            predicates.add(predicateTagsList);
+            countQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .having(criteriaBuilder.equal(countOfTags, criteria.getTagNames().size()))
+                    .groupBy(root);
+        } else {
+            countQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+        }
+
+        Integer countResult = (int) getEntityManager().createQuery(countQuery).getResultList().stream().findFirst().orElse(0);
+        return (countResult / pageSize) + 1;
+    }
+
+    private void setValuesForUpdating(Certificate entity, CriteriaUpdate<Certificate> criteriaUpdate) {
         if (entity.getName() != null) {
             criteriaUpdate.set(CERT_NAME, entity.getName());
         }

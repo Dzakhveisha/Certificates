@@ -1,16 +1,15 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.UserDto;
-
-import java.util.List;
 
 public interface UserService {
     /**
-     * Find all users
+     * Find page of all users
      *
-     * @return list of users
+     * @return page of users
      */
-       List<UserDto> findAll(int pageNumber);
+    PageOfEntities<UserDto> findAll(int pageNumber);
 
     /**
      * Find user by id

@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.TagDtoMapper;
@@ -97,10 +98,11 @@ class TagServiceImplTest {
         List<TagDto> tagsDto = Arrays.asList(TAGS_DTO[0], TAGS_DTO[1]);
         List<Tag> tags = Arrays.asList(TAGS[0], TAGS[1]);
 
-        Mockito.when(tagDao.listOf(1)).thenReturn(tags);
-        List<TagDto> actual = tagService.findAll(1);
+        Mockito.when(tagDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,tags));
+        PageOfEntities<TagDto> actual = tagService.findAll(1);
+        List<TagDto> actualList = actual.getCurPage();
 
-        assertEquals(tagsDto, actual);
+        assertEquals(tagsDto, actualList);
     }
 
     @Test
@@ -108,10 +110,11 @@ class TagServiceImplTest {
         List<TagDto> tagsDto = Collections.emptyList();
         List<Tag> tags = Collections.emptyList();
 
-        Mockito.when(tagDao.listOf(1)).thenReturn(tags);
-        List<TagDto> actual = tagService.findAll(1);
+        Mockito.when(tagDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,tags));
+        PageOfEntities<TagDto> actual = tagService.findAll(1);
+        List<TagDto> actualList = actual.getCurPage();
 
-        assertEquals(tagsDto, actual);
+        assertEquals(tagsDto, actualList);
     }
 
     @Test

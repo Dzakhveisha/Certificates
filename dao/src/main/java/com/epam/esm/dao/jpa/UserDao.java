@@ -1,5 +1,6 @@
 package com.epam.esm.dao.jpa;
 
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
 
 import java.util.List;
@@ -10,11 +11,11 @@ import java.util.Optional;
  */
 public interface UserDao {
     /**
-     * Get all users from database
+     * Get page of all users from database
      *
-     * @return list of all users from database
+     * @return page of all users from database
      */
-    List<User> listOf(int pageNumber);
+    PageOfEntities<User> listOf(int pageNumber);
 
     /**
      * find user with such id
