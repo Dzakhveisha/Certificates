@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.CertificateDao;
+import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Criteria;
@@ -21,7 +22,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,6 +42,8 @@ class CertificateServiceImplTest {
     private CertificateAndTagDao certificateAndTagDao;
     @Mock
     private TagDao tagDao;
+    @Mock
+    private OrderDao orderDao;
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final DateTimeFormatter formatterToLocalDateTime = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
@@ -76,7 +84,7 @@ class CertificateServiceImplTest {
 
     @BeforeEach
     void before() {
-        certificateService = new CertificateServiceImpl(certificateDao, tagDao, certificateAndTagDao,
+        certificateService = new CertificateServiceImpl(certificateDao, tagDao, certificateAndTagDao, orderDao,
                 new CertificateDtoMapper(), new TagDtoMapper());
     }
 
@@ -102,27 +110,28 @@ class CertificateServiceImplTest {
     void testFindAllShouldReturnAllCertificatesFromDb() {
         CertificateDto firstCertificate = CERTIFICATES_DTO[0];
         CertificateDto secondCertificate = CERTIFICATES_DTO[1];
-        List<CertificateDto> certificatesDto = Arrays.asList(firstCertificate, secondCertificate);
         List<Certificate> certificatesEntities = Arrays.asList(CERTIFICATES[0], CERTIFICATES[1]);
 
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(firstCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(secondCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
-        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1, certificatesEntities));
+        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, certificatesEntities));
 
         PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
         List<CertificateDto> actualList = actual.getCurPage();
+
+        List<CertificateDto> certificatesDto = Arrays.asList(firstCertificate, secondCertificate);
         assertEquals(certificatesDto, actualList);
     }
 
     @Test
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
-        List<CertificateDto> certificatesDto = Collections.emptyList();
         List<Certificate> certificates = Collections.emptyList();
 
-        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<Certificate>(1,1, certificates));
+        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<Certificate>(1, 1, certificates));
         PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
         List<CertificateDto> actualList = actual.getCurPage();
 
+        List<CertificateDto> certificatesDto = Collections.emptyList();
         assertEquals(certificatesDto, actualList);
     }
 
@@ -175,8 +184,6 @@ class CertificateServiceImplTest {
 
     @Test
     void testRemove() {
-        TagDto firstTag = TAGS_DTO[1];
-        TagDto secondTag = TAGS_DTO[2];
         CertificateDto certificateDto = CERTIFICATES_DTO[2];
         Certificate certificate = CERTIFICATES[2];
 
@@ -186,24 +193,27 @@ class CertificateServiceImplTest {
                 .thenReturn(new ArrayList<>(Arrays.asList(TAGS[1], TAGS[2])));
 
         certificateService.remove(certificateDto.getId());
+
+        TagDto firstTag = TAGS_DTO[1];
+        TagDto secondTag = TAGS_DTO[2];
         Mockito.verify(certificateAndTagDao, Mockito.times(1)).remove(firstTag.getId(), certificateDto.getId());
         Mockito.verify(certificateAndTagDao, Mockito.times(1)).remove(secondTag.getId(), certificateDto.getId());
     }
 
     @Test
     void testSortAllWithCriteria() {
-        List<CertificateDto> certificatesDto = new ArrayList<>(Arrays.asList(CERTIFICATES_DTO[1], CERTIFICATES_DTO[0]));
         List<Certificate> certificates = new ArrayList<>(Arrays.asList(CERTIFICATES[1], CERTIFICATES[0]));
 
         Mockito.when(certificateDao.sortListWithCriteria(new Criteria("name", "DESK", "certificate",
-                Arrays.asList(TAGS_DTO[0].getName())), 1)).thenReturn(new PageOfEntities<>(1,1,certificates));
+                new HashSet<>(Arrays.asList(TAGS_DTO[0].getName()))), 1)).thenReturn(new PageOfEntities<>(1, 1, certificates));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(0).getId())).thenReturn(Arrays.asList(TAGS[0]));
         Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(1).getId())).thenReturn(Arrays.asList(TAGS[0]));
 
         PageOfEntities<CertificateDto> actualPage = certificateService.sortAllWithCriteria(new Criteria("name", "DESK", "certificate",
-                Arrays.asList(TAGS_DTO[0].getName())), 1);
+                new HashSet<>(Arrays.asList(TAGS_DTO[0].getName()))), 1);
         List<CertificateDto> actual = actualPage.getCurPage();
 
+        List<CertificateDto> certificatesDto = new ArrayList<>(Arrays.asList(CERTIFICATES_DTO[1], CERTIFICATES_DTO[0]));
         assertEquals(certificatesDto, actual);
     }
 }

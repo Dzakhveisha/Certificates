@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({MockitoExtension.class})
 class UserServiceImplTest {
@@ -47,36 +48,35 @@ class UserServiceImplTest {
 
     @Test
     void testFindAllShouldReturnAllTagsIfDbIsNotEmpty() {
-        List<UserDto> usersDto = Arrays.asList(USERS_DTO);
         List<User> users = Arrays.asList(USERS);
 
-        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,users));
+        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, users));
         PageOfEntities<UserDto> all = userService.findAll(1);
         List<UserDto> actual = all.getCurPage();
 
+        List<UserDto> usersDto = Arrays.asList(USERS_DTO);
         assertEquals(usersDto, actual);
     }
 
     @Test
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
-        List<UserDto> usersDto = Collections.emptyList();
         List<User> users = Collections.emptyList();
 
-        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1,1,users));
+        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, users));
         PageOfEntities<UserDto> all = userService.findAll(1);
         List<UserDto> actual = all.getCurPage();
 
-        assertEquals(usersDto, actual);
+        assertTrue(actual.isEmpty());
     }
 
     @Test
     void testFindByIdShouldReturnUserWithSuchId() {
-        UserDto userDto = USERS_DTO[0];
         User user = USERS[0];
 
         Mockito.when(userDao.getById(1L)).thenReturn(Optional.of(user));
         UserDto actual = userService.getById(1L);
 
+        UserDto userDto = USERS_DTO[0];
         assertEquals(userDto, actual);
     }
 

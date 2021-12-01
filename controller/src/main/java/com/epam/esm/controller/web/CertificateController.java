@@ -1,7 +1,7 @@
 package com.epam.esm.controller.web;
 
 
-import com.epam.esm.controller.hateoas.Linker;
+import com.epam.esm.controller.hateoas.CriteriaLinker;
 import com.epam.esm.dao.model.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.CertificateService;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
+import java.util.Set;
 
 
 @RequiredArgsConstructor
@@ -32,10 +32,10 @@ import java.util.List;
 public class CertificateController {
 
     private final CertificateService certificateService;
-    private final Linker<CertificateDto> certificateDtoLinker;
+    private final CriteriaLinker<CertificateDto> certificateDtoLinker;
 
     @GetMapping
-    public PageOfEntities<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) List<String> tagNames,
+    public PageOfEntities<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) Set<String> tagNames,
                                                           @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
                                                           @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
                                                           @RequestParam(defaultValue = "ASC", name = "order", required = false) String order,

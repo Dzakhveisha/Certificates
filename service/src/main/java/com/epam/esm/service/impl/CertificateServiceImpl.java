@@ -2,10 +2,12 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.jpa.CertificateAndTagDao;
 import com.epam.esm.dao.jpa.CertificateDao;
+import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.Order;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.CertificateService;
@@ -34,6 +36,7 @@ public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
     private final TagDao tagDao;
     private final CertificateAndTagDao certificateAndTagDao;
+    private final OrderDao orderDao;
 
     private final Mapper<Certificate, CertificateDto> certificateDtoMapper;
     private final Mapper<Tag, TagDto> tagDtoMapper;
@@ -96,8 +99,16 @@ public class CertificateServiceImpl implements CertificateService {
                 .map(certificateDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         deleteTags(deletedCertificate);
+        deleteOrders(deletedCertificate);
         if (!certificateDao.remove(id)) {
             throw new EntityNotFoundException("Certificate", id);
+        }
+    }
+
+    private void deleteOrders(CertificateDto deletedCertificate) {
+        final List<Order> orders = orderDao.getByCertificate(certificateDtoMapper.toEntity(deletedCertificate));
+        for (Order order : orders) {
+            orderDao.remove(order.getUser().getId(), deletedCertificate.getId());
         }
     }
 
@@ -114,7 +125,7 @@ public class CertificateServiceImpl implements CertificateService {
         return certificatesDtoPage;
     }
 
-    private void createTags(List<TagDto> tags, CertificateDto certificate) {
+    protected void createTags(List<TagDto> tags, CertificateDto certificate) {
         if (tags == null) {
             certificate.setTags(Collections.emptyList());
             return;
@@ -122,8 +133,8 @@ public class CertificateServiceImpl implements CertificateService {
         for (TagDto tag : tags) {
             TagDto newTag = getTag(tag);
             certificateAndTagDao.create(new CertificateAndTag(
-                    certificateDtoMapper.toEntity(certificate),
-                    tagDtoMapper.toEntity(newTag))
+                    certificateDao.getById(certificate.getId()).get(),
+                    tagDao.getById(newTag.getId()).get())
             );
             certificate.addTag(newTag);
         }
@@ -145,19 +156,19 @@ public class CertificateServiceImpl implements CertificateService {
 
     private void updateTags(List<TagDto> newTags, CertificateDto certificate) {
         List<Tag> oldTags = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
-        oldTags.forEach((oldTag) -> {
+        newTags = newTags.stream().map(this::getTag).collect(Collectors.toList());
+        for (Tag oldTag : oldTags) {
             if (!newTags.contains(tagDtoMapper.toDTO(oldTag))) {
                 certificateAndTagDao.remove(oldTag.getId(), certificate.getId());
             }
-        });
-        newTags.forEach(tag -> {
-            TagDto newTag = getTag(tag);
-            if (!certificateAndTagDao.getByTagAndCertificate(certificate.getId(), newTag.getId()).isPresent()) {
-                certificateAndTagDao.create(new CertificateAndTag(certificateDtoMapper.toEntity(certificate),
-                        tagDtoMapper.toEntity(newTag)));
+        }
+        for (TagDto tag : newTags) {
+            if (!certificateAndTagDao.getByTagAndCertificate(certificate.getId(), tag.getId()).isPresent()) {
+                certificateAndTagDao.create(new CertificateAndTag(certificateDao.getById(certificate.getId()).get(),
+                        tagDao.getById(tag.getId()).get()));
             }
-            certificate.addTag(newTag);
-        });
+            certificate.addTag(tag);
+        }
     }
 
     private void validateCertificate(CertificateDto certificate) {

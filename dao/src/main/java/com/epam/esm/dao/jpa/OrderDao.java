@@ -1,8 +1,10 @@
 package com.epam.esm.dao.jpa;
 
+import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Order;
 import com.epam.esm.dao.model.PageOfEntities;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,4 +35,8 @@ public interface OrderDao {
      * @return order
      */
     Optional<Order> getById(long orderId);
+
+    List<Order> getByCertificate(Certificate certificate);
+
+    boolean remove(Long userId, Long certificateId);
 }

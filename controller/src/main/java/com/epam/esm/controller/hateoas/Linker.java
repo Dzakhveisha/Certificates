@@ -1,6 +1,5 @@
 package com.epam.esm.controller.hateoas;
 
-import com.epam.esm.dao.model.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import org.springframework.stereotype.Component;
 
@@ -19,14 +18,4 @@ public interface Linker<T> {
      * @param page page
      */
     void addPaginationLinks(PageOfEntities<T> page);
-
-    /**
-     * add next and pred links for search with criteria result page, if it need
-     *
-     * @param page     page
-     * @param criteria search criteria
-     */
-    default void addPaginationLinks(PageOfEntities<T> page, Criteria criteria) {
-    }
-
 }

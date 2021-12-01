@@ -50,17 +50,6 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
                 .collect(Collectors.toList());
     }
 
-    private int getLastPageNumber() {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery countQuery = criteriaBuilder.createQuery();
-        Root<CertificateAndTag> root = countQuery.from(CertificateAndTag.class);
-        countQuery.select(criteriaBuilder.count(root));
-
-        Long countResult = (long) getEntityManager().createQuery(countQuery).getSingleResult();
-
-        return (int) ((countResult / pageSize) + 1);
-    }
-
     @Override
     public List<Certificate> listOfCertificatesByTags(Long tagId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -108,6 +97,12 @@ public class CertificateAndTagDaoImpl implements CertificateAndTagDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get(TAG).get("id"), tagId));
         criteriaQuery.select(root);
 
-        return Optional.ofNullable(entityManager.createQuery(criteriaQuery).getResultList().get(0));
+        List<CertificateAndTag> resultList = entityManager.createQuery(criteriaQuery).getResultList();
+        if (!resultList.isEmpty()){
+            return Optional.ofNullable(resultList.get(0));
+        }
+        else {
+            return Optional.empty();
+        }
     }
 }

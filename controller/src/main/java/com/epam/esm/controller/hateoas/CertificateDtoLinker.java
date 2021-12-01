@@ -13,7 +13,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class CertificateDtoLinker implements Linker<CertificateDto> {
+public class CertificateDtoLinker implements CriteriaLinker<CertificateDto> {
     @Override
     public void addLinks(CertificateDto certificate) {
         certificate.add(linkTo(CertificateController.class)
@@ -27,11 +27,6 @@ public class CertificateDtoLinker implements Linker<CertificateDto> {
     }
 
     @Override
-    public void addPaginationLinks(PageOfEntities<CertificateDto> page) {
-
-    }
-
-    @Override
     public void addPaginationLinks(PageOfEntities<CertificateDto> page, Criteria criteria) {
         if (page.getCurPageNumber() > 1) {
             if (criteria.getTagNames() != null) {
@@ -41,7 +36,7 @@ public class CertificateDtoLinker implements Linker<CertificateDto> {
                         .withRel("PrevPage"));
             } else {
                 page.add(linkTo(methodOn(CertificateController.class)
-                        .getCertificates(Collections.emptyList(), criteria.getPartName(), criteria.getSortBy(),
+                        .getCertificates(Collections.emptySet(), criteria.getPartName(), criteria.getSortBy(),
                                 criteria.getOrder(), page.getCurPageNumber() - 1))
                         .withRel("PrevPage"));
             }
@@ -54,7 +49,7 @@ public class CertificateDtoLinker implements Linker<CertificateDto> {
                         .withRel("NextPage"));
             } else {
                 page.add(linkTo(methodOn(CertificateController.class)
-                        .getCertificates(Collections.emptyList(), criteria.getPartName(), criteria.getSortBy(),
+                        .getCertificates(Collections.emptySet(), criteria.getPartName(), criteria.getSortBy(),
                                 criteria.getOrder(), page.getCurPageNumber() + 1))
                         .withRel("NextPage"));
             }

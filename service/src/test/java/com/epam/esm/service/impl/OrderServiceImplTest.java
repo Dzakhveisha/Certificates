@@ -3,14 +3,13 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.UserDao;
-import com.epam.esm.dao.model.*;
+import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.Order;
+import com.epam.esm.dao.model.PageOfEntities;
+import com.epam.esm.dao.model.User;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.OrderDtoMapper;
-import com.epam.esm.service.mapper.UserDtoMapper;
-import com.epam.esm.service.model.dto.CertificateDto;
 import com.epam.esm.service.model.dto.OrderDto;
-import com.epam.esm.service.model.dto.TagDto;
-import com.epam.esm.service.model.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +19,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({MockitoExtension.class})
 class OrderServiceImplTest {
@@ -84,22 +88,21 @@ class OrderServiceImplTest {
 
     @Test
     void testGetUserOrdersShouldReturnOrderWithSuchId() {
-        OrderDto orderDto = ORDERS_DTO[0];
         Order order = ORDERS[0];
-
         Mockito.when(orderDao.getById(1L)).thenReturn(Optional.of(order));
 
+        OrderDto orderDto = ORDERS_DTO[0];
         assertEquals(orderService.getUserOrder(orderDto.getUserId(), orderDto.getId()), orderDto);
     }
 
     @Test
     void testGetUserOrdersShouldThrowEntityNotFoundExceptionIfOrderIsNotBelongToUser() {
-        OrderDto orderDto = ORDERS_DTO[0];
         Order order = ORDERS[0];
-
         Mockito.when(orderDao.getById(1L)).thenReturn(Optional.of(order));
 
-        assertThrows(EntityNotFoundException.class, () -> orderService.getUserOrder(3L, orderDto.getId()));
+        OrderDto orderDto = ORDERS_DTO[0];
+        assertThrows(EntityNotFoundException.class,
+                () -> orderService.getUserOrder(3L, orderDto.getId()));
     }
 
     @Test
@@ -110,25 +113,24 @@ class OrderServiceImplTest {
 
     @Test
     void testGetUserOrdersShouldReturnAllOrdersIfDbIsNotEmpty() {
-        List<OrderDto> ordersDto = Arrays.asList(ORDERS_DTO[0], ORDERS_DTO[2]);
         List<Order> orders = Arrays.asList(ORDERS[0], ORDERS[2]);
 
-        Mockito.when(orderDao.listOf(2L, 1)).thenReturn(new PageOfEntities<>(1,1,orders));
+        Mockito.when(orderDao.listOf(2L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
         PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(2L, 1);
         List<OrderDto> actual = userOrders.getCurPage();
 
+        List<OrderDto> ordersDto = Arrays.asList(ORDERS_DTO[0], ORDERS_DTO[2]);
         assertEquals(ordersDto, actual);
     }
 
     @Test
     void testGetUserOrdersShouldReturnEmptyListIfDbIsEmpty() {
-        List<OrderDto> ordersDto = Collections.emptyList();
         List<Order> orders = Collections.emptyList();
 
-        Mockito.when(orderDao.listOf(3L, 1)).thenReturn(new PageOfEntities<>(1,1,orders));
+        Mockito.when(orderDao.listOf(3L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
         PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(3L, 1);
         List<OrderDto> actual = userOrders.getCurPage();
 
-        assertEquals(ordersDto, actual);
+        assertTrue(actual.isEmpty());
     }
 }
