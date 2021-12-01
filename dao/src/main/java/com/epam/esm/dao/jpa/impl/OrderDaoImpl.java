@@ -2,7 +2,6 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.CertificateAndTag;
 import com.epam.esm.dao.model.Order;
 import com.epam.esm.dao.model.PageOfEntities;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,10 +94,7 @@ public class OrderDaoImpl implements OrderDao {
         countQuery.where(criteriaBuilder.equal(root.get("user").get("id"), id));
 
         countQuery.select(criteriaBuilder.count(root));
-
         Long countResult = (Long) entityManager.createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
-
-
         return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
     }
 }

@@ -71,14 +71,19 @@ public interface BaseDao<T extends BaseEntity> {
         Root<T> root = criteria.from(getEntityClass());
         criteria.select(root);
 
-        return new PageOfEntities<>(getCountOfPages(), pageNumber,
+        return new PageOfEntities<>(getCountOfAllPages(), pageNumber,
                 getEntityManager().createQuery(criteria)
                         .setFirstResult((pageNumber - 1) * pageSize)
                         .setMaxResults(pageSize)
                         .getResultList());
     }
 
-    default int getCountOfPages() {
+    /**
+     * Calculate count of pages for all entities from table
+     *
+     * @return count of pages including all entities
+     */
+    default int getCountOfAllPages() {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery countQuery = criteriaBuilder.createQuery();
         Root<T> root = countQuery.from(getEntityClass());

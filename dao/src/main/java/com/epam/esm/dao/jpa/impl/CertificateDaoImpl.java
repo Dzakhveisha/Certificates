@@ -72,57 +72,45 @@ public class CertificateDaoImpl implements CertificateDao {
         Root<Certificate> root = criteriaQuery.from(Certificate.class);
         criteriaQuery.select(root);
 
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + criteria.getPartName() + "%"));
-
-        if (criteria.getTagNames() != null) {
-            Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
-            Expression<Long> countOfTags = criteriaBuilder.count(root);
-            Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(criteria.getTagNames());
-            predicates.add(predicateTagsList);
-            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
-                    .having(criteriaBuilder.equal(countOfTags, criteria.getTagNames().size()))
-                    .groupBy(root);
-        } else {
-            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        }
+        applyPredicates(criteriaBuilder, root, criteria, criteriaQuery);
         if (criteria.getOrder().equals("DESC")) {
             criteriaQuery.orderBy(criteriaBuilder.desc(root.get(criteria.getSortBy())));
         } else {
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get(criteria.getSortBy())));
         }
 
-        return new PageOfEntities<>(countOfPages(criteria), pageNumber,
+        return new PageOfEntities<>(getCountOfPages(criteria), pageNumber,
                 entityManager.createQuery(criteriaQuery)
                         .setFirstResult((pageNumber - 1) * pageSize)
                         .setMaxResults(pageSize)
                         .getResultList());
     }
 
-    private Integer countOfPages(Criteria criteria) {
+    private Integer getCountOfPages(Criteria criteria) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Object> countQuery = criteriaBuilder.createQuery();
         Root<Certificate> root = countQuery.from(Certificate.class);
         countQuery.select(criteriaBuilder.count(root));
 
+        applyPredicates(criteriaBuilder, root, criteria, countQuery);
+        Long countResult = (Long) entityManager.createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
+        return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
+    }
+
+    private void applyPredicates(CriteriaBuilder criteriaBuilder, Root root, Criteria criteria, CriteriaQuery query) {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + criteria.getPartName() + "%"));
-
         if (criteria.getTagNames() != null) {
             Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
             Expression<Long> countOfTags = criteriaBuilder.count(root);
             Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(criteria.getTagNames());
             predicates.add(predicateTagsList);
-            countQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+            query.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .having(criteriaBuilder.equal(countOfTags, criteria.getTagNames().size()))
                     .groupBy(root);
         } else {
-            countQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            query.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         }
-
-        Long countResult = (Long) entityManager.createQuery(countQuery).getResultList().stream().findFirst().orElse(1L);
-        return (int) ((countResult % pageSize == 0) ? (countResult / pageSize) : (countResult / pageSize) + 1);
-
     }
 
     private void setValuesForUpdating(Certificate entity, CriteriaUpdate<Certificate> criteriaUpdate) {
