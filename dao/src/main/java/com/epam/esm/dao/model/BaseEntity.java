@@ -1,17 +1,15 @@
 package com.epam.esm.dao.model;
 
+import com.epam.esm.dao.audit.AuditListener;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 @Data
 @MappedSuperclass
+@EntityListeners(AuditListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseEntity {

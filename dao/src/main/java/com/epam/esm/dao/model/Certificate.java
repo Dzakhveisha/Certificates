@@ -1,15 +1,8 @@
 package com.epam.esm.dao.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,7 +33,8 @@ public class Certificate extends BaseEntity {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
-    @OneToMany(mappedBy = "certificate")
+    @ToString.Exclude
+    @OneToMany(mappedBy = "certificate", cascade = {CascadeType.MERGE})
     private List<CertificateAndTag> certificateAndTagList;
 
     public Certificate(long id, String name, String description, Long price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
