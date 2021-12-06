@@ -42,7 +42,7 @@ public interface BaseDao<T extends BaseEntity> {
      * @param id id of needed entity
      * @return needed entity
      */
-    default Optional<T> getById(Long id) {
+    default Optional<T> findById(Long id) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(getEntityClass());
@@ -52,11 +52,7 @@ public interface BaseDao<T extends BaseEntity> {
         criteriaQuery.select(root);
 
         List<T> resultList = getEntityManager().createQuery(criteriaQuery).getResultList();
-        if (resultList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(resultList.get(0));
-        }
+        return (resultList.isEmpty()) ? Optional.empty() : Optional.ofNullable(resultList.get(0));
     }
 
     /**
@@ -64,7 +60,7 @@ public interface BaseDao<T extends BaseEntity> {
      *
      * @return page of all entities from database
      */
-    default PageOfEntities<T> listOf(int pageNumber) {
+    default PageOfEntities<T> findAll(int pageNumber) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<T> criteria = criteriaBuilder.createQuery(getEntityClass());

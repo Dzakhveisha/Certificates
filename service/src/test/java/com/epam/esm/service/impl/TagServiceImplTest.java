@@ -81,7 +81,7 @@ class TagServiceImplTest {
     @Test
     void testFindByIdShouldReturnTagWithSuchId() {
         Tag tag = TAGS[0];
-        Mockito.when(tagDao.getById(1L)).thenReturn(Optional.of(tag));
+        Mockito.when(tagDao.findById(1L)).thenReturn(Optional.of(tag));
         TagDto actual = tagService.findById(1L);
 
         TagDto tagDto = TAGS_DTO[0];
@@ -90,7 +90,7 @@ class TagServiceImplTest {
 
     @Test
     void testFindByIdShouldThrowEntityNotFoundException() {
-        Mockito.when(tagDao.getById(199L)).thenReturn(Optional.empty());
+        Mockito.when(tagDao.findById(199L)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> tagService.findById(199L));
     }
 
@@ -98,9 +98,9 @@ class TagServiceImplTest {
     void testFindAllShouldReturnAllTagsIfDbIsNotEmpty() {
         List<Tag> tags = Arrays.asList(TAGS[0], TAGS[1]);
 
-        Mockito.when(tagDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, tags));
+        Mockito.when(tagDao.findAll(1)).thenReturn(new PageOfEntities<>(1, 1, tags));
         PageOfEntities<TagDto> actual = tagService.findAll(1);
-        List<TagDto> actualList = actual.getCurPage();
+        List<TagDto> actualList = actual.getPage();
 
         List<TagDto> tagsDto = Arrays.asList(TAGS_DTO[0], TAGS_DTO[1]);
         assertEquals(tagsDto, actualList);
@@ -110,9 +110,9 @@ class TagServiceImplTest {
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
         List<Tag> tags = Collections.emptyList();
 
-        Mockito.when(tagDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, tags));
+        Mockito.when(tagDao.findAll(1)).thenReturn(new PageOfEntities<>(1, 1, tags));
         PageOfEntities<TagDto> actual = tagService.findAll(1);
-        List<TagDto> actualList = actual.getCurPage();
+        List<TagDto> actualList = actual.getPage();
 
         assertTrue(actualList.isEmpty());
     }
@@ -133,7 +133,7 @@ class TagServiceImplTest {
         TagDto tag = TAGS_DTO[0];
 
         Mockito.when(tagDao.remove(tag.getId())).thenReturn(true);
-        Mockito.when(certificateAndTagDao.listOfCertificatesByTags(tag.getId()))
+        Mockito.when(certificateAndTagDao.findCertificatesByTags(tag.getId()))
                 .thenReturn(Arrays.asList(CERTIFICATES[0], CERTIFICATES[1]));
 
         tagService.remove(tag.getId());
@@ -146,7 +146,7 @@ class TagServiceImplTest {
 
     @Test
     void testGetMostUsefulTagByMostActiveUserShoulThrowNotFoundExceptionIfIsNull() {
-        Mockito.when(tagDao.getMostUsefulByMostActiveUser()).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> tagService.getMostUsefulTagByMostActiveUser());
+        Mockito.when(tagDao.findMostUsefulByMostActiveUser()).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> tagService.findMostUsefulTagByMostActiveUser());
     }
 }

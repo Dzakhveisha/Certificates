@@ -14,8 +14,8 @@ public class PageOfEntities<T> extends RepresentationModel<PageOfEntities<T>> {
 
     private Integer countOfPages;
 
-    private Integer curPageNumber;
+    private Integer PageNumber;
 
-    private List<T> curPage;
+    private List<T> Page;
 
 }

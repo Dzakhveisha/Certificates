@@ -5,7 +5,7 @@ import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -93,8 +93,8 @@ class CertificateServiceImplTest {
         CertificateDto certificateDto = CERTIFICATES_DTO[1];
         Certificate certificate = CERTIFICATES[1];
 
-        Mockito.when(certificateDao.getById(2L)).thenReturn(Optional.of(certificate));
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificateDto.getId())).thenReturn(Arrays.asList(TAGS[0]));
+        Mockito.when(certificateDao.findById(2L)).thenReturn(Optional.of(certificate));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(certificateDto.getId())).thenReturn(Arrays.asList(TAGS[0]));
 
         CertificateDto actual = certificateService.findById(2L);
         assertEquals(certificateDto, actual);
@@ -102,7 +102,7 @@ class CertificateServiceImplTest {
 
     @Test
     void testFindByIdShouldThrowEntityNotFoundException() {
-        Mockito.when(certificateDao.getById(199L)).thenReturn(Optional.empty());
+        Mockito.when(certificateDao.findById(199L)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> certificateService.findById(199L));
     }
 
@@ -112,12 +112,12 @@ class CertificateServiceImplTest {
         CertificateDto secondCertificate = CERTIFICATES_DTO[1];
         List<Certificate> certificatesEntities = Arrays.asList(CERTIFICATES[0], CERTIFICATES[1]);
 
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(firstCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(secondCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
-        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, certificatesEntities));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(firstCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(secondCertificate.getId())).thenReturn(Arrays.asList(TAGS[0]));
+        Mockito.when(certificateDao.findAll(1)).thenReturn(new PageOfEntities<>(1, 1, certificatesEntities));
 
         PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
-        List<CertificateDto> actualList = actual.getCurPage();
+        List<CertificateDto> actualList = actual.getPage();
 
         List<CertificateDto> certificatesDto = Arrays.asList(firstCertificate, secondCertificate);
         assertEquals(certificatesDto, actualList);
@@ -127,9 +127,9 @@ class CertificateServiceImplTest {
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
         List<Certificate> certificates = Collections.emptyList();
 
-        Mockito.when(certificateDao.listOf(1)).thenReturn(new PageOfEntities<Certificate>(1, 1, certificates));
+        Mockito.when(certificateDao.findAll(1)).thenReturn(new PageOfEntities<Certificate>(1, 1, certificates));
         PageOfEntities<CertificateDto> actual = certificateService.findAll(1);
-        List<CertificateDto> actualList = actual.getCurPage();
+        List<CertificateDto> actualList = actual.getPage();
 
         List<CertificateDto> certificatesDto = Collections.emptyList();
         assertEquals(certificatesDto, actualList);
@@ -141,7 +141,7 @@ class CertificateServiceImplTest {
         Certificate newCertificate = CERTIFICATES[0];
 
         Mockito.when(certificateDao.create(Mockito.any())).thenReturn(newCertificate);
-        Mockito.when(tagDao.getByName(TAGS[0].getName())).thenReturn(Optional.of(TAGS[0]));
+        Mockito.when(tagDao.findByName(TAGS[0].getName())).thenReturn(Optional.of(TAGS[0]));
         CertificateDto actual = certificateService.create(certificateDto);
 
         assertEquals(certificateDto.getId(), actual.getId());
@@ -163,7 +163,7 @@ class CertificateServiceImplTest {
         Certificate updatingCertificate = new Certificate(1L, "certificateUP", "up", 105L, 10,
                 LocalDateTime.parse("2021-11-06 11:00:00", formatterToLocalDateTime), LocalDateTime.parse("2021-11-06 11:00:00", formatterToLocalDateTime));
 
-        Mockito.when(tagDao.getByName(tagDto.getName())).thenReturn(Optional.of(tag));
+        Mockito.when(tagDao.findByName(tagDto.getName())).thenReturn(Optional.of(tag));
         Mockito.when(certificateDao.update(Mockito.eq(certificateForUpdateDto.getId()), Mockito.any()))
                 .thenReturn(Optional.of(updatingCertificate));
 
@@ -188,8 +188,8 @@ class CertificateServiceImplTest {
         Certificate certificate = CERTIFICATES[2];
 
         Mockito.when(certificateDao.remove(certificateDto.getId())).thenReturn(true);
-        Mockito.when(certificateDao.getById(certificateDto.getId())).thenReturn(Optional.of(certificate));
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificateDto.getId()))
+        Mockito.when(certificateDao.findById(certificateDto.getId())).thenReturn(Optional.of(certificate));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(certificateDto.getId()))
                 .thenReturn(new ArrayList<>(Arrays.asList(TAGS[1], TAGS[2])));
 
         certificateService.remove(certificateDto.getId());
@@ -204,14 +204,14 @@ class CertificateServiceImplTest {
     void testSortAllWithCriteria() {
         List<Certificate> certificates = new ArrayList<>(Arrays.asList(CERTIFICATES[1], CERTIFICATES[0]));
 
-        Mockito.when(certificateDao.sortListWithCriteria(new Criteria("name", "DESK", "certificate",
+        Mockito.when(certificateDao.findWithCriteria(new Criteria("name", "DESK", "certificate",
                 new HashSet<>(Arrays.asList(TAGS_DTO[0].getName()))), 1)).thenReturn(new PageOfEntities<>(1, 1, certificates));
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(0).getId())).thenReturn(Arrays.asList(TAGS[0]));
-        Mockito.when(certificateAndTagDao.listOfTagsByCertificate(certificates.get(1).getId())).thenReturn(Arrays.asList(TAGS[0]));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(certificates.get(0).getId())).thenReturn(Arrays.asList(TAGS[0]));
+        Mockito.when(certificateAndTagDao.findTagsByCertificate(certificates.get(1).getId())).thenReturn(Arrays.asList(TAGS[0]));
 
         PageOfEntities<CertificateDto> actualPage = certificateService.sortAllWithCriteria(new Criteria("name", "DESK", "certificate",
                 new HashSet<>(Arrays.asList(TAGS_DTO[0].getName()))), 1);
-        List<CertificateDto> actual = actualPage.getCurPage();
+        List<CertificateDto> actual = actualPage.getPage();
 
         List<CertificateDto> certificatesDto = new ArrayList<>(Arrays.asList(CERTIFICATES_DTO[1], CERTIFICATES_DTO[0]));
         assertEquals(certificatesDto, actual);

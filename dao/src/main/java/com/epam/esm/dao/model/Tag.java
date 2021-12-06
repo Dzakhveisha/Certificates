@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class Tag extends BaseEntity {
 
-    @Column(name = "name")
+    @Column
     private String name;
 
     public Tag(Long id, String name) {

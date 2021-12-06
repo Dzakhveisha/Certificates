@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificateAndTagId implements Serializable {
+public class CertificateToTagRelationId implements Serializable {
 
     @Column(name = "certificate_id")
     private Long certificateId;

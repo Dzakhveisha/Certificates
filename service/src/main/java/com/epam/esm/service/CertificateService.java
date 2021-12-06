@@ -1,6 +1,6 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.CertificateDto;
 

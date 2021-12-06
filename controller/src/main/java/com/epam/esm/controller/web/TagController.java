@@ -32,7 +32,7 @@ public class TagController {
     @GetMapping
     public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
-        tagsPage.getCurPage().forEach(tagDtoLinker::addLinks);
+        tagsPage.getPage().forEach(tagDtoLinker::addLinks);
         tagDtoLinker.addPaginationLinks(tagsPage);
         return tagsPage;
     }
@@ -60,7 +60,7 @@ public class TagController {
 
     @GetMapping("/mostUseful")
     TagDto getMostUsefulTag() {
-        TagDto mostUsefulTag = tagService.getMostUsefulTagByMostActiveUser();
+        TagDto mostUsefulTag = tagService.findMostUsefulTagByMostActiveUser();
         tagDtoLinker.addLinks(mostUsefulTag);
         return mostUsefulTag;
     }

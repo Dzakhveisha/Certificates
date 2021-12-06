@@ -2,7 +2,7 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Tag;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 
 @Repository
-@Data
+@AllArgsConstructor
 public class TagDaoImpl implements TagDao {
 
     private static final String TAG_NAME = "name";
@@ -47,10 +47,6 @@ public class TagDaoImpl implements TagDao {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public TagDaoImpl(EntityManager em) {
-        this.entityManager = em;
-    }
-
     @Override
     public EntityManager getEntityManager() {
         return entityManager;
@@ -62,7 +58,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public Optional<Tag> getByName(String name) {
+    public Optional<Tag> findByName(String name) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
@@ -72,21 +68,13 @@ public class TagDaoImpl implements TagDao {
         criteriaQuery.select(root);
 
         List<Tag> resultList = getEntityManager().createQuery(criteriaQuery).getResultList();
-        if (resultList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(resultList.get(0));
-        }
+        return (resultList.isEmpty()) ? Optional.empty() : Optional.ofNullable(resultList.get(0));
     }
 
     @Override
-    public Optional<Tag> getMostUsefulByMostActiveUser() {
+    public Optional<Tag> findMostUsefulByMostActiveUser() {
         Query nativeQuery = getEntityManager().createNativeQuery(SQL_POPULAR_TAG, Tag.class);
         List<Tag> resultList = nativeQuery.getResultList();
-        if (resultList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(resultList.get(0));
-        }
+        return (resultList.isEmpty()) ? Optional.empty() : Optional.ofNullable(resultList.get(0));
     }
 }

@@ -81,43 +81,38 @@ class OrderServiceImplTest {
         orderService = new OrderServiceImpl(orderDao, certificateDao, userDao, new OrderDtoMapper());
     }
 
-
-    @Test
-    void createOrder() {
-    }
-
     @Test
     void testGetUserOrdersShouldReturnOrderWithSuchId() {
         Order order = ORDERS[0];
-        Mockito.when(orderDao.getById(1L)).thenReturn(Optional.of(order));
+        Mockito.when(orderDao.findById(1L)).thenReturn(Optional.of(order));
 
         OrderDto orderDto = ORDERS_DTO[0];
-        assertEquals(orderService.getUserOrder(orderDto.getUserId(), orderDto.getId()), orderDto);
+        assertEquals(orderService.findUserOrder(orderDto.getUserId(), orderDto.getId()), orderDto);
     }
 
     @Test
     void testGetUserOrdersShouldThrowEntityNotFoundExceptionIfOrderIsNotBelongToUser() {
         Order order = ORDERS[0];
-        Mockito.when(orderDao.getById(1L)).thenReturn(Optional.of(order));
+        Mockito.when(orderDao.findById(1L)).thenReturn(Optional.of(order));
 
         OrderDto orderDto = ORDERS_DTO[0];
         assertThrows(EntityNotFoundException.class,
-                () -> orderService.getUserOrder(3L, orderDto.getId()));
+                () -> orderService.findUserOrder(3L, orderDto.getId()));
     }
 
     @Test
     void testGetUserOrdersShouldThrowEntityNotFoundExceptionIfOrderIsNotExist() {
-        Mockito.when(orderDao.getById(222L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> orderService.getUserOrder(3L, 222L));
+        Mockito.when(orderDao.findById(222L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> orderService.findUserOrder(3L, 222L));
     }
 
     @Test
     void testGetUserOrdersShouldReturnAllOrdersIfDbIsNotEmpty() {
         List<Order> orders = Arrays.asList(ORDERS[0], ORDERS[2]);
 
-        Mockito.when(orderDao.listOf(2L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
-        PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(2L, 1);
-        List<OrderDto> actual = userOrders.getCurPage();
+        Mockito.when(orderDao.findAll(2L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
+        PageOfEntities<OrderDto> userOrders = orderService.findUserOrders(2L, 1);
+        List<OrderDto> actual = userOrders.getPage();
 
         List<OrderDto> ordersDto = Arrays.asList(ORDERS_DTO[0], ORDERS_DTO[2]);
         assertEquals(ordersDto, actual);
@@ -127,9 +122,9 @@ class OrderServiceImplTest {
     void testGetUserOrdersShouldReturnEmptyListIfDbIsEmpty() {
         List<Order> orders = Collections.emptyList();
 
-        Mockito.when(orderDao.listOf(3L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
-        PageOfEntities<OrderDto> userOrders = orderService.getUserOrders(3L, 1);
-        List<OrderDto> actual = userOrders.getCurPage();
+        Mockito.when(orderDao.findAll(3L, 1)).thenReturn(new PageOfEntities<>(1, 1, orders));
+        PageOfEntities<OrderDto> userOrders = orderService.findUserOrders(3L, 1);
+        List<OrderDto> actual = userOrders.getPage();
 
         assertTrue(actual.isEmpty());
     }

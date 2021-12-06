@@ -1,4 +1,4 @@
-package com.epam.esm.dao.model;
+package com.epam.esm.dao.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

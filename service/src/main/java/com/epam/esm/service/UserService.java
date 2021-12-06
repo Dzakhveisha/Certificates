@@ -17,5 +17,5 @@ public interface UserService {
      * @param userId id of user
      * @return user
      */
-    UserDto getById(Long userId);
+    UserDto findById(Long userId);
 }

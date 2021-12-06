@@ -10,6 +10,7 @@ import com.epam.esm.service.model.dto.UserDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,17 +22,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageOfEntities<UserDto> findAll(int pageNumber) {
-        PageOfEntities<User> userPage = userDao.listOf(pageNumber);
-        return new PageOfEntities<>(userPage.getCountOfPages(), userPage.getCurPageNumber(),
-                userPage.getCurPage()
-                        .stream()
-                        .map(userDtoMapper::toDTO)
-                        .collect(Collectors.toList()));
+        PageOfEntities<User> userPage = userDao.findAll(pageNumber);
+        List<UserDto> usersDto = userPage.getPage()
+                .stream()
+                .map(userDtoMapper::toDTO)
+                .collect(Collectors.toList());
+        return new PageOfEntities<>(userPage.getCountOfPages(), userPage.getPageNumber(), usersDto);
     }
 
     @Override
-    public UserDto getById(Long userId) {
-        return userDao.getById(userId)
+    public UserDto findById(Long userId) {
+        return userDao.findById(userId)
                 .map(userDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("User", userId));
     }

@@ -3,7 +3,7 @@ package com.epam.esm.controller.handler;
 import com.epam.esm.controller.config.Translator;
 import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.EntityNotFoundException;
-import com.epam.esm.service.exception.SuchEntityAlreadyExistException;
+import com.epam.esm.service.exception.EntityAlreadyExistException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -27,11 +27,11 @@ public class RestExceptionHandler {
                 e.getCauseMsg()), HttpStatus.BAD_REQUEST, ArgumentNotValidException.CODE);
     }
 
-    @ExceptionHandler(SuchEntityAlreadyExistException.class)
+    @ExceptionHandler(EntityAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public RestError HandleAlreadyExistException(SuchEntityAlreadyExistException e) {
-        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + SuchEntityAlreadyExistException.CODE,
-                e.getTagName()), HttpStatus.BAD_REQUEST, SuchEntityAlreadyExistException.CODE);
+    public RestError HandleAlreadyExistException(EntityAlreadyExistException e) {
+        return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + EntityAlreadyExistException.CODE,
+                e.getTagName()), HttpStatus.BAD_REQUEST, EntityAlreadyExistException.CODE);
     }
 
     @ExceptionHandler({EntityNotFoundException.class})

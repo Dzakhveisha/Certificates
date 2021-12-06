@@ -41,6 +41,6 @@ public interface TagService {
      *
      * @return the most useful tag
      */
-    TagDto getMostUsefulTagByMostActiveUser();
+    TagDto findMostUsefulTagByMostActiveUser();
 }
 

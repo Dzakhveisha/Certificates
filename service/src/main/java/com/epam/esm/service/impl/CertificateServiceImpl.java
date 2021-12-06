@@ -5,8 +5,8 @@ import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.jpa.OrderDao;
 import com.epam.esm.dao.jpa.TagDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.CertificateAndTag;
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.model.CertificateToTagRelation;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.Order;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.Tag;
@@ -44,7 +44,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public CertificateDto findById(Long id) {
-        CertificateDto certificate = certificateDao.getById(id)
+        CertificateDto certificate = certificateDao.findById(id)
                 .map(certificateDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         addTags(certificate);
@@ -53,14 +53,14 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public PageOfEntities<CertificateDto> findAll(int pageNumber) {
-        PageOfEntities<Certificate> pageOfCertificates = certificateDao.listOf(pageNumber);
+        PageOfEntities<Certificate> pageOfCertificates = certificateDao.findAll(pageNumber);
         PageOfEntities<CertificateDto> pageOfDtoCertificates = new PageOfEntities<>(pageOfCertificates.getCountOfPages(),
-                pageOfCertificates.getCurPageNumber(),
-                pageOfCertificates.getCurPage()
+                pageOfCertificates.getPageNumber(),
+                pageOfCertificates.getPage()
                         .stream()
                         .map(certificateDtoMapper::toDTO)
                         .collect(Collectors.toList()));
-        pageOfDtoCertificates.getCurPage().forEach(this::addTags);
+        pageOfDtoCertificates.getPage().forEach(this::addTags);
         return pageOfDtoCertificates;
     }
 
@@ -95,18 +95,16 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     @Override
     public void remove(Long id) {
-        CertificateDto deletedCertificate = certificateDao.getById(id)
+        CertificateDto deletedCertificate = certificateDao.findById(id)
                 .map(certificateDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Certificate", id));
         deleteTags(deletedCertificate);
         deleteOrders(deletedCertificate);
-        if (!certificateDao.remove(id)) {
-            throw new EntityNotFoundException("Certificate", id);
-        }
+        certificateDao.remove(id);
     }
 
     private void deleteOrders(CertificateDto deletedCertificate) {
-        final List<Order> orders = orderDao.getByCertificate(certificateDtoMapper.toEntity(deletedCertificate));
+        final List<Order> orders = orderDao.findByCertificate(certificateDtoMapper.toEntity(deletedCertificate));
         for (Order order : orders) {
             orderDao.remove(order.getUser().getId(), deletedCertificate.getId());
         }
@@ -114,14 +112,14 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public PageOfEntities<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber) {
-        PageOfEntities<Certificate> certificatePage = certificateDao.sortListWithCriteria(criteria, pageNumber);
+        PageOfEntities<Certificate> certificatePage = certificateDao.findWithCriteria(criteria, pageNumber);
         PageOfEntities<CertificateDto> certificatesDtoPage = new PageOfEntities<>(
-                certificatePage.getCountOfPages(), certificatePage.getCurPageNumber(),
-                certificatePage.getCurPage()
+                certificatePage.getCountOfPages(), certificatePage.getPageNumber(),
+                certificatePage.getPage()
                         .stream()
                         .map(certificateDtoMapper::toDTO)
                         .collect(Collectors.toList()));
-        certificatesDtoPage.getCurPage().forEach(this::addTags);
+        certificatesDtoPage.getPage().forEach(this::addTags);
         return certificatesDtoPage;
     }
 
@@ -132,30 +130,30 @@ public class CertificateServiceImpl implements CertificateService {
         }
         for (TagDto tag : tags) {
             TagDto newTag = getTag(tag);
-            certificateAndTagDao.create(new CertificateAndTag(
-                    certificateDao.getById(certificate.getId()).get(),
-                    tagDao.getById(newTag.getId()).get())
+            certificateAndTagDao.create(new CertificateToTagRelation(
+                    certificateDao.findById(certificate.getId()).get(),
+                    tagDao.findById(newTag.getId()).get())
             );
             certificate.addTag(newTag);
         }
     }
 
     private void deleteTags(CertificateDto certificate) {
-        final List<Tag> tagsIds = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        final List<Tag> tagsIds = certificateAndTagDao.findTagsByCertificate(certificate.getId());
         for (Tag tag : tagsIds) {
             certificateAndTagDao.remove(tag.getId(), certificate.getId());
         }
     }
 
     private void addTags(CertificateDto certificate) {
-        final List<Tag> tags = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        final List<Tag> tags = certificateAndTagDao.findTagsByCertificate(certificate.getId());
         for (Tag tag : tags) {
             certificate.addTag(tagDtoMapper.toDTO(tag));
         }
     }
 
     private void updateTags(List<TagDto> newTags, CertificateDto certificate) {
-        List<Tag> oldTags = certificateAndTagDao.listOfTagsByCertificate(certificate.getId());
+        List<Tag> oldTags = certificateAndTagDao.findTagsByCertificate(certificate.getId());
         newTags = newTags.stream().map(this::getTag).collect(Collectors.toList());
         for (Tag oldTag : oldTags) {
             if (!newTags.contains(tagDtoMapper.toDTO(oldTag))) {
@@ -163,9 +161,9 @@ public class CertificateServiceImpl implements CertificateService {
             }
         }
         for (TagDto tag : newTags) {
-            if (!certificateAndTagDao.getByTagAndCertificate(certificate.getId(), tag.getId()).isPresent()) {
-                certificateAndTagDao.create(new CertificateAndTag(certificateDao.getById(certificate.getId()).get(),
-                        tagDao.getById(tag.getId()).get()));
+            if (!certificateAndTagDao.findByTagAndCertificate(certificate.getId(), tag.getId()).isPresent()) {
+                certificateAndTagDao.create(new CertificateToTagRelation(certificateDao.findById(certificate.getId()).get(),
+                        tagDao.findById(tag.getId()).get()));
             }
             certificate.addTag(tag);
         }
@@ -189,25 +187,25 @@ public class CertificateServiceImpl implements CertificateService {
             throw new ArgumentNotValidException("tag's name and id are null!");
         }
         if (tag.getId() != null) {
-            if (tagDao.getById(tag.getId()).isPresent()) {
-                return tagDao.getById(tag.getId())
+            if (tagDao.findById(tag.getId()).isPresent()) {
+                return tagDao.findById(tag.getId())
                         .map(tagDtoMapper::toDTO)
                         .get();
             } else {
                 if (tag.getName() != null) {
-                    if (!tagDao.getByName(tag.getName()).isPresent()) {
+                    if (!tagDao.findByName(tag.getName()).isPresent()) {
                         tagDao.create(tagDtoMapper.toEntity(tag));
                     }
-                    return tagDao.getByName(tag.getName())
+                    return tagDao.findByName(tag.getName())
                             .map(tagDtoMapper::toDTO)
                             .get();
                 } else throw new EntityNotFoundException("Certificate", tag.getId());
             }
         } else {
-            if (!tagDao.getByName(tag.getName()).isPresent()) {
+            if (!tagDao.findByName(tag.getName()).isPresent()) {
                 tagDao.create(tagDtoMapper.toEntity(tag));
             }
-            return tagDao.getByName(tag.getName())
+            return tagDao.findByName(tag.getName())
                     .map(tagDtoMapper::toDTO)
                     .get();
         }

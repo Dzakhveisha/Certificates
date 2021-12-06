@@ -6,7 +6,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "certificate_tag")
@@ -15,10 +21,10 @@ import javax.persistence.*;
 @EntityListeners(AuditListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificateAndTag {
+public class CertificateToTagRelation {
 
     @EmbeddedId
-    private CertificateAndTagId id;
+    private CertificateToTagRelationId id;
 
     @ManyToOne
     @MapsId("certificateId")
@@ -30,9 +36,9 @@ public class CertificateAndTag {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
-    public CertificateAndTag(Certificate certificate, Tag newTag) {
+    public CertificateToTagRelation(Certificate certificate, Tag newTag) {
         this.certificate = certificate;
         this.tag = newTag;
-        this.id = new CertificateAndTagId(certificate.getId(), tag.getId());
+        this.id = new CertificateToTagRelationId(certificate.getId(), tag.getId());
     }
 }

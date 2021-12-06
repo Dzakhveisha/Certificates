@@ -1,7 +1,7 @@
 package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 
 import java.util.Optional;
@@ -26,6 +26,6 @@ public interface CertificateDao extends BaseDao<Certificate> {
      * @param criteria criteria with all parameters for search and sort
      * @return page of sorted in needed order list of found certificates
      */
-    PageOfEntities<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber);
+    PageOfEntities<Certificate> findWithCriteria(Criteria criteria, int pageNumber);
 
 }

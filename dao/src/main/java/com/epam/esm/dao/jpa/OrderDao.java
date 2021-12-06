@@ -18,7 +18,7 @@ public interface OrderDao {
      * @param pageNumber number of page
      * @return orders
      */
-    PageOfEntities<Order> listOf(long id, int pageNumber);
+    PageOfEntities<Order> findAll(long id, int pageNumber);
 
     /**
      * create new order
@@ -34,9 +34,9 @@ public interface OrderDao {
      * @param orderId id of order
      * @return order
      */
-    Optional<Order> getById(long orderId);
+    Optional<Order> findById(long orderId);
 
-    List<Order> getByCertificate(Certificate certificate);
+    List<Order> findByCertificate(Certificate certificate);
 
     boolean remove(Long userId, Long certificateId);
 }

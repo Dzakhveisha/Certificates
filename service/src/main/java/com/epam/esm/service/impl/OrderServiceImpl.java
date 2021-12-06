@@ -30,13 +30,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderDto createOrder(long userId, OrderDto order) {
+    public OrderDto create(long userId, OrderDto order) {
         order.setDate(LocalDateTime.now());
 
-        Certificate certificate = certificateDao.getById(order.getCertificateId())
+        Certificate certificate = certificateDao.findById(order.getCertificateId())
                 .orElseThrow(() -> new EntityNotFoundException("Certificate", order.getCertificateId()));
         order.setPrice(certificate.getPrice());
-        User user = userDao.getById(userId).orElseThrow(() -> new EntityNotFoundException("User", userId));
+        User user = userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException("User", userId));
 
         Order orderEntity = orderDtoMapper.toEntity(order);
         orderEntity.setUser(user);
@@ -46,18 +46,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PageOfEntities<OrderDto> getUserOrders(long id, int pageNumber) {
-        PageOfEntities<Order> orderPage = orderDao.listOf(id, pageNumber);
-        return new PageOfEntities<>(orderPage.getCountOfPages(), orderPage.getCurPageNumber(),
-                orderPage.getCurPage()
+    public PageOfEntities<OrderDto> findUserOrders(long id, int pageNumber) {
+        PageOfEntities<Order> orderPage = orderDao.findAll(id, pageNumber);
+        return new PageOfEntities<>(orderPage.getCountOfPages(), orderPage.getPageNumber(),
+                orderPage.getPage()
                         .stream()
                         .map(orderDtoMapper::toDTO)
                         .collect(Collectors.toList()));
     }
 
     @Override
-    public OrderDto getUserOrder(long userId, long orderId) {
-        OrderDto order = orderDao.getById(orderId)
+    public OrderDto findUserOrder(long userId, long orderId) {
+        OrderDto order = orderDao.findById(orderId)
                 .map(orderDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Order", orderId));
         if (order.getUserId().equals(userId)) {

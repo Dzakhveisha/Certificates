@@ -19,14 +19,14 @@ public class TagDtoLinker implements Linker<TagDto> {
 
     @Override
     public void addPaginationLinks(PageOfEntities<TagDto> page) {
-        if (page.getCurPageNumber() > 1) {
+        if (page.getPageNumber() > 1) {
             page.add(linkTo(methodOn(TagController.class)
-                    .getAllTags(page.getCurPageNumber() - 1))
+                    .getAllTags(page.getPageNumber() - 1))
                     .withRel("PrevPage"));
         }
-        if (page.getCurPageNumber() < page.getCountOfPages()) {
+        if (page.getPageNumber() < page.getCountOfPages()) {
             page.add(linkTo(methodOn(TagController.class)
-                    .getAllTags(page.getCurPageNumber() + 1))
+                    .getAllTags(page.getPageNumber() + 1))
                     .withRel("NextPage"));
         }
     }

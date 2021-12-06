@@ -50,9 +50,9 @@ class UserServiceImplTest {
     void testFindAllShouldReturnAllTagsIfDbIsNotEmpty() {
         List<User> users = Arrays.asList(USERS);
 
-        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, users));
+        Mockito.when(userDao.findAll(1)).thenReturn(new PageOfEntities<>(1, 1, users));
         PageOfEntities<UserDto> all = userService.findAll(1);
-        List<UserDto> actual = all.getCurPage();
+        List<UserDto> actual = all.getPage();
 
         List<UserDto> usersDto = Arrays.asList(USERS_DTO);
         assertEquals(usersDto, actual);
@@ -62,9 +62,9 @@ class UserServiceImplTest {
     void testFindAllShouldReturnEmptyListIfDbIsEmpty() {
         List<User> users = Collections.emptyList();
 
-        Mockito.when(userDao.listOf(1)).thenReturn(new PageOfEntities<>(1, 1, users));
+        Mockito.when(userDao.findAll(1)).thenReturn(new PageOfEntities<>(1, 1, users));
         PageOfEntities<UserDto> all = userService.findAll(1);
-        List<UserDto> actual = all.getCurPage();
+        List<UserDto> actual = all.getPage();
 
         assertTrue(actual.isEmpty());
     }
@@ -73,8 +73,8 @@ class UserServiceImplTest {
     void testFindByIdShouldReturnUserWithSuchId() {
         User user = USERS[0];
 
-        Mockito.when(userDao.getById(1L)).thenReturn(Optional.of(user));
-        UserDto actual = userService.getById(1L);
+        Mockito.when(userDao.findById(1L)).thenReturn(Optional.of(user));
+        UserDto actual = userService.findById(1L);
 
         UserDto userDto = USERS_DTO[0];
         assertEquals(userDto, actual);
@@ -82,7 +82,7 @@ class UserServiceImplTest {
 
     @Test
     void testFindByIdShouldThrowEntityNotFoundException() {
-        Mockito.when(userDao.getById(199L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> userService.getById(199L));
+        Mockito.when(userDao.findById(199L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> userService.findById(199L));
     }
 }

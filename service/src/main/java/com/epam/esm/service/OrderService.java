@@ -11,7 +11,7 @@ public interface OrderService {
      * @param order  order to create
      * @return created order
      */
-    OrderDto createOrder(long userId, OrderDto order);
+    OrderDto create(long userId, OrderDto order);
 
     /**
      * Find orders, which belongs to this user
@@ -20,7 +20,7 @@ public interface OrderService {
      * @param pageNumber number of page
      * @return page of orders
      */
-    PageOfEntities<OrderDto> getUserOrders(long id, int pageNumber);
+    PageOfEntities<OrderDto> findUserOrders(long id, int pageNumber);
 
     /**
      * return order with such id? and which belongs to this user
@@ -29,5 +29,5 @@ public interface OrderService {
      * @param orderId id of order
      * @return order
      */
-    OrderDto getUserOrder(long userId, long orderId);
+    OrderDto findUserOrder(long userId, long orderId);
 }

@@ -2,7 +2,7 @@ package com.epam.esm.controller.web;
 
 
 import com.epam.esm.controller.hateoas.CriteriaLinker;
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.model.dto.CertificateDto;
@@ -43,7 +43,7 @@ public class CertificateController {
 
         Criteria criteria = new Criteria(sortBy, order, partName, tagNames);
         PageOfEntities<CertificateDto> pageOfCertificates = certificateService.sortAllWithCriteria(criteria, pageNumber);
-        pageOfCertificates.getCurPage().forEach((certificateDtoLinker::addLinks));
+        pageOfCertificates.getPage().forEach((certificateDtoLinker::addLinks));
         certificateDtoLinker.addPaginationLinks(pageOfCertificates, criteria);
         return pageOfCertificates;
     }

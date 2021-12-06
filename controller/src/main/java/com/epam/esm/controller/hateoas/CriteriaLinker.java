@@ -1,6 +1,6 @@
 package com.epam.esm.controller.hateoas;
 
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 
 public interface CriteriaLinker<T> {

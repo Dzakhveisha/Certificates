@@ -2,9 +2,9 @@ package com.epam.esm.dao.jpa.impl;
 
 import com.epam.esm.dao.jpa.CertificateDao;
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.model.Criteria;
+import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Data
+@AllArgsConstructor
 public class CertificateDaoImpl implements CertificateDao {
 
     private static final String CERT_ID = "id";
@@ -34,10 +34,6 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @PersistenceContext
     private final EntityManager entityManager;
-
-    public CertificateDaoImpl(EntityManager em) {
-        this.entityManager = em;
-    }
 
     @Override
     public EntityManager getEntityManager() {
@@ -59,11 +55,11 @@ public class CertificateDaoImpl implements CertificateDao {
         criteriaUpdate.where(criteriaBuilder.equal(root.get(CERT_ID), id));
 
         entityManager.createQuery(criteriaUpdate).executeUpdate();
-        return this.getById(id);
+        return this.findById(id);
     }
 
     @Override
-    public PageOfEntities<Certificate> sortListWithCriteria(Criteria criteria, int pageNumber) {
+    public PageOfEntities<Certificate> findWithCriteria(Criteria criteria, int pageNumber) {
         if (!criteria.getSortBy().equals(CERT_NAME) && !criteria.getSortBy().equals(CERT_CREATE_DATE)) {
             criteria.setSortBy(CERT_ID);
         }
@@ -101,7 +97,7 @@ public class CertificateDaoImpl implements CertificateDao {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.like(root.get(CERT_NAME), "%" + criteria.getPartName() + "%"));
         if (criteria.getTagNames() != null) {
-            Join<Object, Object> tagListJoin = root.join("certificateAndTagList").join("tag");
+            Join<Object, Object> tagListJoin = root.join("certificateToTagRelationList").join("tag");
             Expression<Long> countOfTags = criteriaBuilder.count(root);
             Predicate predicateTagsList = tagListJoin.get(CERT_NAME).in(criteria.getTagNames());
             predicates.add(predicateTagsList);
