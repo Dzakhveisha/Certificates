@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @Validated
 public class AuthorisationController {
 
@@ -18,7 +18,15 @@ public class AuthorisationController {
     private SecurityService securityService;
     private Linker<UserDto> userDtoLinker;
 
-    @PostMapping("signIn/")
+    @PostMapping("login")
+    public UserDto login(@RequestBody UserDto user) {
+
+        // todo: ???
+
+        return user;
+    }
+
+    @PostMapping("registration")
     public UserDto registerUser(@RequestBody UserDto user) {
 
         userService.add(user); //register

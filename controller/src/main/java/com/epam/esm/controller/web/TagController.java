@@ -31,7 +31,7 @@ public class TagController {
     private final Linker<TagDto> tagDtoLinker;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("permitAll()")
     public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
         tagsPage.getPage().forEach(tagDtoLinker::addLinks);
@@ -41,6 +41,7 @@ public class TagController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public TagDto createTag(@Valid @RequestBody TagDto tag) {
         TagDto createdTag = tagService.create(tag);
         tagDtoLinker.addLinks(createdTag);
@@ -48,6 +49,7 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public TagDto getTag(@PathVariable Long id) {
         TagDto tag = tagService.findById(id);
         tagDtoLinker.addLinks(tag);
@@ -56,11 +58,13 @@ public class TagController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTag(@PathVariable Long id) {
         tagService.remove(id);
     }
 
     @GetMapping("/mostUseful")
+    @PreAuthorize("hasRole('ADMIN')")
     TagDto getMostUsefulTag() {
         TagDto mostUsefulTag = tagService.findMostUsefulTagByMostActiveUser();
         tagDtoLinker.addLinks(mostUsefulTag);

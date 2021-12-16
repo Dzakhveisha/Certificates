@@ -6,6 +6,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.model.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ public class OrderController {
 
     @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public OrderDto createOrder(@PathVariable long id, @Valid @RequestBody OrderDto order) {
         OrderDto createdOrder = orderService.create(id, order);
         orderDtoLinker.addLinks(createdOrder);
@@ -34,6 +36,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/orders")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")                         //???
     public PageOfEntities<OrderDto> getUserOrders(@PathVariable long id,
                                                   @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<OrderDto> userOrdersPage = orderService.findUserOrders(id, pageNumber);
@@ -43,6 +46,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/orders/{orderId}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public OrderDto getUserOrderById(@PathVariable long id, @PathVariable long orderId) {
         OrderDto userOrder = orderService.findUserOrder(id, orderId);
         orderDtoLinker.addLinks(userOrder);
