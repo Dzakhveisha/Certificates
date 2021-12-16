@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.jpa.UserDao;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
+import com.epam.esm.dao.model.UserRole;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.UserDtoMapper;
 import com.epam.esm.service.model.dto.UserDto;
@@ -30,15 +31,15 @@ class UserServiceImplTest {
     private UserDao userDao;
 
     private static final UserDto[] USERS_DTO = {
-            new UserDto(1L, "User1"),
-            new UserDto(2L, "User2"),
-            new UserDto(3L, "User3")
+            new UserDto(1L, "User1",  UserRole.USER,null),
+            new UserDto(2L, "User2",  UserRole.USER,null),
+            new UserDto(3L, "User3",  UserRole.USER,null)
     };
 
     private static final User[] USERS = {
-            new User(1L, "User1"),
-            new User(2L, "User2"),
-            new User(3L, "User3")
+            new User(1L, "User1", null, 1L),
+            new User(2L, "User2", null, 1L),
+            new User(3L, "User3", null, 1L)
     };
 
     @BeforeEach

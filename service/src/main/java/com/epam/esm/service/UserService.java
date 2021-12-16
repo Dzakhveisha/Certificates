@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.UserDto;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface UserService {
     /**
@@ -18,4 +19,8 @@ public interface UserService {
      * @return user
      */
     UserDto findById(Long userId);
+
+    UserDto findByName(String username) throws UsernameNotFoundException;
+
+    UserDto add(UserDto user);
 }

@@ -20,8 +20,16 @@ public class User extends BaseEntity {
     @Column
     private String name;
 
-    public User(Long id, String name) {
+    @Column(name = "u_password")
+    private String password;
+
+    @Column(name = "role")
+    private Long roleId;
+
+    public User(Long id, String name, String password, Long roleId) {
         super(id);
         this.name = name;
+        this.password = password;
+        this.roleId = roleId;
     }
 }

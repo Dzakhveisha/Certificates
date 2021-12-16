@@ -6,6 +6,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ public class TagController {
     private final Linker<TagDto> tagDtoLinker;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
         tagsPage.getPage().forEach(tagDtoLinker::addLinks);

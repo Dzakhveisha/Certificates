@@ -46,9 +46,9 @@ class OrderServiceImplTest {
 
 
     private static final User[] USERS = {
-            new User(1L, "User1"),
-            new User(2L, "User2"),
-            new User(3L, "User3")
+            new User(1L, "User1", null, 1L),
+            new User(2L, "User2", null, 1L),
+            new User(3L, "User3", null, 1L)
     };
 
     private static final Certificate[] CERTIFICATES = {

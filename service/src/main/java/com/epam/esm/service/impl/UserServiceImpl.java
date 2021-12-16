@@ -8,6 +8,7 @@ import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.UserDto;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +36,20 @@ public class UserServiceImpl implements UserService {
         return userDao.findById(userId)
                 .map(userDtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("User", userId));
+    }
+
+
+    @Override
+    public UserDto findByName(String username) throws UsernameNotFoundException {
+        return userDao.findByName(username)
+                .map(userDtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("User"));
+    }
+
+    @Override
+    public UserDto add(UserDto user) {
+        return userDtoMapper.toDTO(
+                userDao.create(userDtoMapper.toEntity(user))
+        );
     }
 }
