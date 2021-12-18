@@ -3,8 +3,10 @@ package com.epam.esm.controller.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.epam.esm.controller.security.CustomUserDetails;
+import com.epam.esm.dao.model.User;
+import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -39,14 +41,24 @@ public class JwtGeneratorFilter extends UsernamePasswordAuthenticationFilter {
         this.objectMapper = objectMapper;
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = request.getParameter("name");
-        String password = request.getParameter("password");
-        log.info("Username is : {}", username);
-        log.info("password is : {}", password);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        return getAuthenticationManager().authenticate(authenticationToken);
+        if (request.getMethod().equals("POST")) {
+            User user = new User();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                user = mapper.readValue(request.getInputStream(), User.class);
+            } catch (IOException e) {
+                throw new ArgumentNotValidException("");
+            }
+            log.info("Username is : {}", user.getName());
+            log.info("password is : {}", user.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword());
+            return getAuthenticationManager().authenticate(authenticationToken);
+        } else {
+            throw new FilterException("Unsupported method!");
+        }
     }
 
     @Override

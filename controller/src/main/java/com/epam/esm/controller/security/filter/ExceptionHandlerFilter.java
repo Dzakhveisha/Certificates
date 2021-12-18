@@ -31,6 +31,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             handler.sendError(HttpStatus.UNAUTHORIZED, "-07", response);
         } catch (AccessDeniedException e) {
             handler.sendError(HttpStatus.FORBIDDEN, "-05", response);
+        }catch (FilterException e){
+            handler.sendError(HttpStatus.METHOD_NOT_ALLOWED , "", response);
         }
 
     }
