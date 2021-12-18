@@ -65,7 +65,8 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity accessDeniedException(AccessDeniedException e) throws AccessDeniedException {
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public RestError handleAccessDeniedException(AccessDeniedException e){
         throw e;
     }
 

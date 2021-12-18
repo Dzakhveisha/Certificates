@@ -28,7 +28,7 @@ public class OrderController {
 
     @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @PreAuthorize("hasAuthority('ADMIN') OR (hasAuthority('USER') AND #id == principal.id)")
     public OrderDto createOrder(@PathVariable long id, @Valid @RequestBody OrderDto order) {
         OrderDto createdOrder = orderService.create(id, order);
         orderDtoLinker.addLinks(createdOrder);
@@ -36,7 +36,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/orders")
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")                         //???
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public PageOfEntities<OrderDto> getUserOrders(@PathVariable long id,
                                                   @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<OrderDto> userOrdersPage = orderService.findUserOrders(id, pageNumber);
