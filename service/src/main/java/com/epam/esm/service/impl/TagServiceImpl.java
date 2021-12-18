@@ -49,7 +49,7 @@ public class TagServiceImpl implements TagService {
             return dtoMapper.toDTO(tagDao
                     .create(dtoMapper.toEntity(entity)));
         }
-        throw new EntityAlreadyExistException(entity.getName());
+        throw new EntityAlreadyExistException(entity.getName(), "Tag");
     }
 
     @Transactional

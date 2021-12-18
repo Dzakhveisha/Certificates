@@ -2,11 +2,12 @@ package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.config.Translator;
 import com.epam.esm.service.exception.ArgumentNotValidException;
-import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.EntityAlreadyExistException;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +32,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RestError HandleAlreadyExistException(EntityAlreadyExistException e) {
         return new RestError(translator.toLocale(HttpStatus.BAD_REQUEST.value() + EntityAlreadyExistException.CODE,
-                e.getTagName()), HttpStatus.BAD_REQUEST, EntityAlreadyExistException.CODE);
+                e.getEntityType(), e.getName()), HttpStatus.BAD_REQUEST, EntityAlreadyExistException.CODE);
     }
 
     @ExceptionHandler({EntityNotFoundException.class})
@@ -63,26 +64,15 @@ public class RestExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity accessDeniedException(AccessDeniedException e) throws AccessDeniedException {
+        throw e;
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestError HandleRuntimeExceptions(RuntimeException restException) {
         return new RestError(restException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Data
-    protected class RestError {
-        private final String errorMessage;
-        private final String errorCode;
-
-        public RestError(String errorMessage, HttpStatus httpStatus, String exceptionCode) {
-            this.errorMessage = errorMessage;
-            this.errorCode = httpStatus.value() + exceptionCode;
-        }
-
-        public RestError(String errorMessage, HttpStatus httpStatus) {
-            this.errorMessage = errorMessage;
-            this.errorCode = String.valueOf(httpStatus.value());
-        }
     }
 
 }

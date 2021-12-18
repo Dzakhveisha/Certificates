@@ -22,5 +22,5 @@ public interface UserService {
 
     UserDto findByName(String username) throws UsernameNotFoundException;
 
-    UserDto add(UserDto user);
+    UserDto register(UserDto user);
 }

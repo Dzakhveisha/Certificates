@@ -23,7 +23,6 @@ public class UserDto extends RepresentationModel<UserDto> {
 
     private UserRole role;
 
-    @JsonIgnore
     @NotNull
     private String password;
 

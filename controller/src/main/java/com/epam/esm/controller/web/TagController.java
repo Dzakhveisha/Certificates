@@ -23,7 +23,7 @@ import javax.validation.constraints.Min;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/tags")
+@RequestMapping("/tags")
 @Validated
 public class TagController {
 
@@ -41,7 +41,7 @@ public class TagController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public TagDto createTag(@Valid @RequestBody TagDto tag) {
         TagDto createdTag = tagService.create(tag);
         tagDtoLinker.addLinks(createdTag);
@@ -58,13 +58,13 @@ public class TagController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteTag(@PathVariable Long id) {
         tagService.remove(id);
     }
 
     @GetMapping("/mostUseful")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     TagDto getMostUsefulTag() {
         TagDto mostUsefulTag = tagService.findMostUsefulTagByMostActiveUser();
         tagDtoLinker.addLinks(mostUsefulTag);

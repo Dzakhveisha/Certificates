@@ -5,32 +5,27 @@ import com.epam.esm.controller.security.SecurityService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.model.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
 @Validated
 public class AuthorisationController {
 
-    private UserService userService;
-    private SecurityService securityService;
-    private Linker<UserDto> userDtoLinker;
+    private final UserService userService;
+    private final SecurityService securityService;
+    private final Linker<UserDto> userDtoLinker;
 
-    @PostMapping("login")
-    public UserDto login(@RequestBody UserDto user) {
 
-        // todo: ???
-
-        return user;
-    }
-
-    @PostMapping("registration")
-    public UserDto registerUser(@RequestBody UserDto user) {
-
-        userService.add(user); //register
-        userDtoLinker.addLinks(user);
-        return user;
+    @PreAuthorize("permitAll()")
+    @PostMapping("/registration")
+    public UserDto registerUser(@RequestBody @Valid UserDto user) {
+        UserDto registerUser = userService.register(user);
+        userDtoLinker.addLinks(registerUser);
+        return registerUser;
     }
 }

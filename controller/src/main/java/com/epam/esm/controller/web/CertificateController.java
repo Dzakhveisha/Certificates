@@ -28,7 +28,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/certificates")
+@RequestMapping("/certificates")
 @Validated
 public class CertificateController {
 
@@ -52,7 +52,7 @@ public class CertificateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CertificateDto createCertificate(@Valid @RequestBody CertificateDto certificate) {
         CertificateDto createdCertificate = certificateService.create(certificate);
         certificateDtoLinker.addLinks(createdCertificate);
@@ -69,13 +69,13 @@ public class CertificateController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteCertificate(@PathVariable Long id) {
         certificateService.remove(id);
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CertificateDto updateCertificate(@PathVariable Long id,
                                             @RequestBody CertificateDto certificate) {
         CertificateDto updatedCertificate = certificateService.update(id, certificate);

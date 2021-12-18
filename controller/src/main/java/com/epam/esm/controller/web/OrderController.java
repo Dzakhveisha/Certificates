@@ -21,14 +21,14 @@ import javax.validation.constraints.Min;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 public class OrderController {
     private final OrderService orderService;
     private final Linker<OrderDto> orderDtoLinker;
 
     @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public OrderDto createOrder(@PathVariable long id, @Valid @RequestBody OrderDto order) {
         OrderDto createdOrder = orderService.create(id, order);
         orderDtoLinker.addLinks(createdOrder);
@@ -36,7 +36,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/orders")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")                         //???
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")                         //???
     public PageOfEntities<OrderDto> getUserOrders(@PathVariable long id,
                                                   @Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
         PageOfEntities<OrderDto> userOrdersPage = orderService.findUserOrders(id, pageNumber);
@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/orders/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public OrderDto getUserOrderById(@PathVariable long id, @PathVariable long orderId) {
         OrderDto userOrder = orderService.findUserOrder(id, orderId);
         orderDtoLinker.addLinks(userOrder);
