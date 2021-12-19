@@ -5,6 +5,7 @@ import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -33,10 +34,12 @@ public class TagController {
     @GetMapping
     @PreAuthorize("permitAll()")
     public PageOfEntities<TagDto> getAllTags(@Min(1) @RequestParam(required = false, defaultValue = "1") int pageNumber) {
-        PageOfEntities<TagDto> tagsPage = tagService.findAll(pageNumber);
-        tagsPage.getPage().forEach(tagDtoLinker::addLinks);
-        tagDtoLinker.addPaginationLinks(tagsPage);
-        return tagsPage;
+        Page<TagDto> tagsPage = tagService.findAll(pageNumber);
+        tagsPage.forEach(tagDtoLinker::addLinks);
+        PageOfEntities<TagDto> page = new PageOfEntities<>(tagsPage.getTotalPages(), tagsPage.getPageable().getPageNumber(),
+                tagsPage.getContent());
+        tagDtoLinker.addPaginationLinks(page);
+        return page;
     }
 
     @PostMapping

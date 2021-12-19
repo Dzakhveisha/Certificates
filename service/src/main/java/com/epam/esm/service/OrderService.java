@@ -1,7 +1,8 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.OrderDto;
+import com.epam.esm.service.model.dto.UserDto;
+import org.springframework.data.domain.Page;
 
 public interface OrderService {
     /**
@@ -16,11 +17,12 @@ public interface OrderService {
     /**
      * Find orders, which belongs to this user
      *
-     * @param id         id of user
+     *
+     * @param user
      * @param pageNumber number of page
      * @return page of orders
      */
-    PageOfEntities<OrderDto> findUserOrders(long id, int pageNumber);
+    Page<OrderDto> findUserOrders(UserDto user, int pageNumber);
 
     /**
      * return order with such id? and which belongs to this user

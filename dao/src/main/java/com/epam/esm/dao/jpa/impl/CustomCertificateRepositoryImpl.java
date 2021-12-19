@@ -1,6 +1,6 @@
 package com.epam.esm.dao.jpa.impl;
 
-import com.epam.esm.dao.jpa.CertificateDao;
+import com.epam.esm.dao.jpa.CustomCertificateRepository;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
@@ -11,18 +11,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class CertificateDaoImpl implements CertificateDao {
+public class CustomCertificateRepositoryImpl implements CustomCertificateRepository {
 
     private static final String CERT_ID = "id";
     private static final String CERT_NAME = "name";
@@ -32,31 +30,10 @@ public class CertificateDaoImpl implements CertificateDao {
     private static final String CERT_CREATE_DATE = "createDate";
     private static final String CERT_LAST_UPDATE_DATE = "lastUpdateDate";
 
+    private static final int pageSize = 10;
     @PersistenceContext
     private final EntityManager entityManager;
 
-    @Override
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    @Override
-    public Class getEntityClass() {
-        return Certificate.class;
-    }
-
-
-    @Override
-    public Optional<Certificate> update(Long id, Certificate entity) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaUpdate<Certificate> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Certificate.class);
-        Root<Certificate> root = criteriaUpdate.from(Certificate.class);
-        setValuesForUpdating(entity, criteriaUpdate);
-        criteriaUpdate.where(criteriaBuilder.equal(root.get(CERT_ID), id));
-
-        entityManager.createQuery(criteriaUpdate).executeUpdate();
-        return this.findById(id);
-    }
 
     @Override
     public PageOfEntities<Certificate> findWithCriteria(Criteria criteria, int pageNumber) {
@@ -83,7 +60,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     private Integer getCountOfPages(Criteria criteria) {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> countQuery = criteriaBuilder.createQuery();
         Root<Certificate> root = countQuery.from(Certificate.class);
         countQuery.select(criteriaBuilder.count(root));
@@ -107,21 +84,5 @@ public class CertificateDaoImpl implements CertificateDao {
         } else {
             query.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         }
-    }
-
-    private void setValuesForUpdating(Certificate entity, CriteriaUpdate<Certificate> criteriaUpdate) {
-        if (entity.getName() != null) {
-            criteriaUpdate.set(CERT_NAME, entity.getName());
-        }
-        if (entity.getDescription() != null) {
-            criteriaUpdate.set(CERT_DESCRIPTION, entity.getDescription());
-        }
-        if (entity.getPrice() != null) {
-            criteriaUpdate.set(CERT_PRICE, entity.getPrice());
-        }
-        if (entity.getDuration() != null) {
-            criteriaUpdate.set(CERT_DURATION, entity.getDuration());
-        }
-        criteriaUpdate.set(CERT_LAST_UPDATE_DATE, entity.getLastUpdateDate());
     }
 }
