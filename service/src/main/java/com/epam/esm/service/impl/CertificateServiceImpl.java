@@ -79,14 +79,32 @@ public class CertificateServiceImpl implements CertificateService {
         if (!certificateRepository.findById(id).isPresent()){
             throw new EntityNotFoundException("Certificate", id);
         }
-        newCertificateEntity.setId(id);
-        CertificateDto certificate = certificateDtoMapper.toDTO(certificateRepository.save(newCertificateEntity));
+        Certificate oldCertificate = certificateRepository.getById(id);
+        updateOldCertificate(oldCertificate, newCertificateEntity);
+        CertificateDto certificate = certificateDtoMapper.toDTO(certificateRepository.save(oldCertificate));
         if (entity.getTags() != null) {
             updateTags(entity.getTags(), certificate);
         } else {
             addTags(certificate);
         }
         return certificate;
+    }
+
+    private void updateOldCertificate(Certificate oldCertificate, Certificate entity) {
+        if (entity.getName() != null) {
+            oldCertificate.setName(entity.getName());
+        }
+        if (entity.getDescription() != null) {
+            oldCertificate.setDescription(entity.getDescription());
+
+        }
+        if (entity.getPrice() != null) {
+            oldCertificate.setPrice(entity.getPrice());
+        }
+        if (entity.getDuration() != null) {
+            oldCertificate.setDuration(entity.getDuration());
+        }
+        oldCertificate.setLastUpdateDate(entity.getLastUpdateDate());
     }
 
     @Transactional
@@ -196,7 +214,7 @@ public class CertificateServiceImpl implements CertificateService {
                     return tagRepository.findByName(tag.getName())
                             .map(tagDtoMapper::toDTO)
                             .get();
-                } else throw new EntityNotFoundException("Certificate", tag.getId());
+                } else throw new EntityNotFoundException("Tag", tag.getId());
             }
         } else {
             if (!tagRepository.findByName(tag.getName()).isPresent()) {

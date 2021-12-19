@@ -5,6 +5,7 @@ import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.dao.model.User;
 import com.epam.esm.dao.model.UserRole;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.exception.ArgumentNotValidException;
 import com.epam.esm.service.exception.EntityAlreadyExistException;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.mapper.Mapper;
@@ -53,9 +54,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto register(UserDto user) {
+        if(user.getName() == null || user.getPassword() == null){
+            throw new ArgumentNotValidException("Not enough parameters!");
+        }
         Optional<User> userOptional = userRepository.findByName(user.getName());
         if (userOptional.isPresent()) {
-            throw new EntityAlreadyExistException(user.getName(), "Certificate");
+            throw new EntityAlreadyExistException(user.getName(), "User");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(UserRole.USER);

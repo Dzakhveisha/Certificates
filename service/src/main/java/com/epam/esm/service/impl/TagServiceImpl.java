@@ -53,6 +53,9 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public void remove(Long id) {
+        if (!tagRepository.findById(id).isPresent()){
+            throw new EntityNotFoundException("Tag", id);
+        }
         final List<Certificate> certificateIds = certificateAndTagRepository.findCertificatesByTagId(id);
         certificateIds.forEach((certificate) -> certificateAndTagRepository.deleteByTagIdAndCertificateId(id, certificate.getId()));
         tagRepository.deleteById(id);

@@ -46,7 +46,7 @@ public class OrderController {
         Page<OrderDto> userOrdersPage = orderService.findUserOrders(userService.findById(id), pageNumber);
         userOrdersPage.forEach(orderDtoLinker::addLinks);
         PageOfEntities<OrderDto> page = new PageOfEntities<>(userOrdersPage.getTotalPages(),
-                userOrdersPage.getPageable().getPageNumber(), userOrdersPage.getContent());
+                userOrdersPage.getPageable().getPageNumber() + 1, userOrdersPage.getContent());
         orderDtoLinker.addPaginationLinks(page);
         return page;
     }

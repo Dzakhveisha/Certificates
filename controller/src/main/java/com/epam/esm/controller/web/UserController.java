@@ -30,7 +30,7 @@ public class UserController {
         Page<UserDto> usersPage = userService.findAll(pageNumber);
         usersPage.forEach(userDtoLinker::addLinks);
         PageOfEntities<UserDto> page = new PageOfEntities<>(usersPage.getTotalPages(),
-                usersPage.getPageable().getPageNumber(), usersPage.getContent());
+                usersPage.getPageable().getPageNumber() + 1, usersPage.getContent());
         userDtoLinker.addPaginationLinks(page);
         return page;
     }
