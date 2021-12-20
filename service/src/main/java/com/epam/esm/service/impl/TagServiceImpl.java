@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.jpa.CertificateAndTagRelatonRepository;
-import com.epam.esm.dao.jpa.CustomTagRepository;
 import com.epam.esm.dao.jpa.TagRepository;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.Tag;
@@ -23,7 +22,6 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
-    private final CustomTagRepository customTagRepository;
     private final CertificateAndTagRelatonRepository certificateAndTagRepository;
     private final Mapper<Tag, TagDto> dtoMapper;
 
@@ -63,7 +61,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto findMostUsefulTagByMostActiveUser() {
-        return customTagRepository.findMostUsefulByMostActiveUser()
+        return tagRepository.findMostUseful()
                 .map(dtoMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Tag"));
     }

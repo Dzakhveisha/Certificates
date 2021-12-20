@@ -1,6 +1,10 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jpa.*;
+import com.epam.esm.dao.jpa.CertificateAndTagRelatonRepository;
+import com.epam.esm.dao.jpa.CertificateRepository;
+import com.epam.esm.dao.jpa.OrderRepository;
+import com.epam.esm.dao.jpa.TagRepository;
+import com.epam.esm.dao.jpa.specification.CertificateSpecification;
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateToTagRelation;
 import com.epam.esm.dao.entity.Criteria;
@@ -33,7 +37,6 @@ public class CertificateServiceImpl implements CertificateService {
     private final DateTimeFormatter formatterToString = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final CertificateRepository certificateRepository;
-    private final CustomCertificateRepository customCertificateRepository;
     private final TagRepository tagRepository;
     private final CertificateAndTagRelatonRepository certificateAndTagRepository;
     private final OrderRepository orderRepository;
@@ -127,10 +130,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public PageOfEntities<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber) {
-        PageOfEntities<Certificate> certificatePage = customCertificateRepository.findWithCriteria(criteria, pageNumber);
+        Page<Certificate> certificatePage = certificateRepository.findAll(new CertificateSpecification(criteria),
+                PageRequest.of(pageNumber,10));
         PageOfEntities<CertificateDto> certificatesDtoPage = new PageOfEntities<>(
-                certificatePage.getCountOfPages(), certificatePage.getPageNumber(),
-                certificatePage.getPage()
+                certificatePage.getTotalPages(), certificatePage.getPageable().getPageNumber(),
+                certificatePage.getContent()
                         .stream()
                         .map(certificateDtoMapper::toDTO)
                         .collect(Collectors.toList()));

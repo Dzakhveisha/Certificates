@@ -1,15 +1,14 @@
 package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.model.Certificate;
-import com.epam.esm.dao.entity.Criteria;
-import com.epam.esm.dao.model.PageOfEntities;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * DAO for Certificate entity
  */
-public interface CertificateRepository extends JpaRepository<Certificate, Long> {
+public interface CertificateRepository extends JpaRepository<Certificate, Long>,
+        JpaSpecificationExecutor<Certificate> {
+
 
 }
