@@ -13,9 +13,28 @@ import java.util.List;
  */
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
+    /**
+     * Find all orders of user
+     *
+     * @param id       user id
+     * @param pageable needed page
+     * @return page of orders
+     */
     Page<Order> findByUserId(Long id, Pageable pageable);
 
+    /**
+     * Find all orders with certificate
+     *
+     * @param certificate certificate
+     * @return list of orders
+     */
     List<Order> findByCertificate(Certificate certificate);
 
+    /**
+     * find and delete  order with such user and certificate
+     *
+     * @param userId        id of usr
+     * @param CertificateId id of certificate
+     */
     void deleteByUserIdAndCertificateId(Long userId, Long CertificateId);
 }

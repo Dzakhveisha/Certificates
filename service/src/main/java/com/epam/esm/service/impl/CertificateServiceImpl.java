@@ -131,9 +131,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public PageOfEntities<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber) {
         Page<Certificate> certificatePage = certificateRepository.findAll(new CertificateSpecification(criteria),
-                PageRequest.of(pageNumber,10));
+                PageRequest.of(pageNumber - 1,10));
         PageOfEntities<CertificateDto> certificatesDtoPage = new PageOfEntities<>(
-                certificatePage.getTotalPages(), certificatePage.getPageable().getPageNumber(),
+                certificatePage.getTotalPages(), certificatePage.getPageable().getPageNumber() + 1,
                 certificatePage.getContent()
                         .stream()
                         .map(certificateDtoMapper::toDTO)
