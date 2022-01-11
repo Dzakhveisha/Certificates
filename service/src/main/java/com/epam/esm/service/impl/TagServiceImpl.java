@@ -1,11 +1,14 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.jdbc.CertificateAndTagDao;
-import com.epam.esm.dao.jdbc.TagDao;
+import com.epam.esm.dao.jpa.CertificateAndTagDao;
+import com.epam.esm.dao.jpa.TagDao;
+import com.epam.esm.dao.model.Certificate;
+import com.epam.esm.dao.model.PageOfEntities;
+import com.epam.esm.dao.model.Tag;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.exception.SuchTagAlreadyExistException;
-import com.epam.esm.service.exception.TagNotFoundException;
-import com.epam.esm.service.mapper.TagDtoMapper;
+import com.epam.esm.service.exception.EntityNotFoundException;
+import com.epam.esm.service.exception.EntityAlreadyExistException;
+import com.epam.esm.service.mapper.Mapper;
 import com.epam.esm.service.model.dto.TagDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,39 +21,51 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private final TagDao jdbcTagDao;
+    private final TagDao tagDao;
     private final CertificateAndTagDao certificateAndTagDao;
-    private final TagDtoMapper dtoMapper;
+    private final Mapper<Tag, TagDto> dtoMapper;
 
     @Override
     public TagDto findById(Long id) {
-        return dtoMapper.toDTO(jdbcTagDao.getEntityById(id).orElseThrow(() -> new TagNotFoundException(id)));
+        return tagDao.findById(id)
+                .map(dtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Tag", id));
     }
 
     @Override
-    public List<TagDto> findAll() {
-        return jdbcTagDao.listOfEntities()
+    public PageOfEntities<TagDto> findAll(int pageNumber) {
+        PageOfEntities<Tag> page = tagDao.findAll(pageNumber);
+        List<TagDto> tagsDto = page.getPage()
                 .stream()
                 .map(dtoMapper::toDTO)
                 .collect(Collectors.toList());
+        return new PageOfEntities<>(page.getCountOfPages(), page.getPageNumber(), tagsDto);
     }
 
+    @Transactional
     @Override
     public TagDto create(TagDto entity) {
-        if (!jdbcTagDao.getTagByName(entity.getName()).isPresent()) {
-            return dtoMapper.toDTO(jdbcTagDao
-                    .createEntity(dtoMapper.toEntity(entity)));
+        if (!tagDao.findByName(entity.getName()).isPresent()) {
+            return dtoMapper.toDTO(tagDao
+                    .create(dtoMapper.toEntity(entity)));
         }
-        throw new SuchTagAlreadyExistException(entity.getName());
+        throw new EntityAlreadyExistException(entity.getName());
     }
 
     @Transactional
     @Override
     public void remove(Long id) {
-        final List<Long> certificateIds = certificateAndTagDao.listOfCertificatesIdByTags(id);
-        certificateIds.forEach((certificateId) -> certificateAndTagDao.removeEntity(id, certificateId));
-        if (!jdbcTagDao.removeEntity(id)) {
-            throw new TagNotFoundException(id);
+        final List<Certificate> certificateIds = certificateAndTagDao.findCertificatesByTags(id);
+        certificateIds.forEach((certificate) -> certificateAndTagDao.remove(id, certificate.getId()));
+        if (!tagDao.remove(id)) {
+            throw new EntityNotFoundException("Tag", id);
         }
+    }
+
+    @Override
+    public TagDto findMostUsefulTagByMostActiveUser() {
+        return tagDao.findMostUsefulByMostActiveUser()
+                .map(dtoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Tag"));
     }
 }

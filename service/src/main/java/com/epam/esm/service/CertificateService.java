@@ -1,8 +1,8 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dao.entity.Criteria;
+import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.CertificateDto;
-
-import java.util.List;
 
 public interface CertificateService {
 
@@ -15,11 +15,12 @@ public interface CertificateService {
     CertificateDto findById(Long id);
 
     /**
-     * find all certificates
+     * find page of all certificates
      *
-     * @return list of certificates
+     * @param pageNumber number of page
+     * @return page of certificates
      */
-    List<CertificateDto> findAll();
+    PageOfEntities<CertificateDto> findAll(int pageNumber);
 
     /**
      * Create certificate
@@ -46,13 +47,10 @@ public interface CertificateService {
     void remove(Long id);
 
     /**
-     * Get list of certificate, sorted by sortBy field with needed order, which searching by part of name and tag name
+     * Get page of certificate, sorted by sortBy field with needed order, which searching by part of name and tag name
      *
-     * @param sortBy   field, by which all certificates will be sorted
-     * @param order    order of sorting (DESC or ASC)
-     * @param partName part of name or description of certificate, by which will be searching
-     * @param tagName  name of tag, by which will be certificate's searching
-     * @return sorted in needed order list of found certificates
+     * @param criteria criteria with all parameters for search and sort
+     * @return page of sorted in needed order list of found certificates
      */
-    List<CertificateDto> sortAllWithCriteria(String sortBy, String order, String partName, String tagName);
+    PageOfEntities<CertificateDto> sortAllWithCriteria(Criteria criteria, int pageNumber);
 }
