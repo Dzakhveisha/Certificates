@@ -17,7 +17,33 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <jacksonVersion>2.13.0</jacksonVersion>
+        <spring.boot.mainclass>com.epam.esm.controller.app.Application</spring.boot.mainclass>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <mainClass>
+                                com.epam.esm.controller.app.Application
+                            </mainClass>
+                            <classifier>spring-boot</classifier>
+
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -38,33 +64,6 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${springframework.version}</version>
         </dependency>
-
-   <!--     &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-resource-server &ndash;&gt;
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-resource-server</artifactId>
-            <version>5.6.0</version>
-        </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-oauth2 &ndash;&gt;
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-oauth2</artifactId>
-            <version>2.2.5.RELEASE</version>
-        </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose &ndash;&gt;
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-jose</artifactId>
-            <version>5.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.0.1</version>
-        </dependency>-->
-
-
 
 
     </dependencies>

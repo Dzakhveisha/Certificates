@@ -54,7 +54,7 @@ create table user_orders
         foreign key (user_id) references users (id)
 );
 
-insert into users (id, name, u_password, role) values (1, 'Karen', 'Eyx7I32oGK', 1);
+insert into users (id, name, u_password, role) values (1, 'Admin', '$2a$10$2JDPIjxlBw.iDbr1qMe6eOTl./rJw1CXyXvo2hW9RDCP6WyUY8trG', 2);
 insert into users (id, name, u_password, role) values (2, 'Jamesy', 'rigdca9uYpG', 1);
 insert into users (id, name, u_password, role) values (3, 'Codee', '0qoc6VXlGlB', 1);
 insert into users (id, name, u_password, role) values (4, 'Harriett', '5ldN8B7OQOb', 1);

@@ -19,6 +19,7 @@
         <springframework.version>5.3.5</springframework.version>
         <junit.version>5.8.1</junit.version>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+        <spring.boot.mainclass>com.epam.esm.controller.app.Application</spring.boot.mainclass>
     </properties>
 
     <dependencies>
@@ -45,7 +46,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
+            <version>1.18.8</version>
             <scope>compile</scope>
         </dependency>
 
@@ -78,8 +79,6 @@
             <artifactId>java-jwt</artifactId>
             <version>3.18.2</version>
         </dependency>
-
-
 
     </dependencies>
 
