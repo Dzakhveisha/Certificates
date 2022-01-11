@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dao.entity.Criteria;
 import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.CertificateDto;
+import org.springframework.data.domain.Page;
 
 public interface CertificateService {
 
@@ -20,7 +21,7 @@ public interface CertificateService {
      * @param pageNumber number of page
      * @return page of certificates
      */
-    PageOfEntities<CertificateDto> findAll(int pageNumber);
+    Page<CertificateDto> findAll(int pageNumber);
 
     /**
      * Create certificate

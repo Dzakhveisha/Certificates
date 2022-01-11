@@ -1,7 +1,7 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.model.PageOfEntities;
 import com.epam.esm.service.model.dto.TagDto;
+import org.springframework.data.domain.Page;
 
 public interface TagService {
 
@@ -19,7 +19,7 @@ public interface TagService {
      * @param pageNumber number of page
      * @return page of tags
      */
-    PageOfEntities<TagDto> findAll(int pageNumber);
+    Page<TagDto> findAll(int pageNumber);
 
     /**
      * Create tag

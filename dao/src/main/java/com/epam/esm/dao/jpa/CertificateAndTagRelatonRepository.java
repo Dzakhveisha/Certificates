@@ -2,7 +2,8 @@ package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.model.Certificate;
 import com.epam.esm.dao.model.CertificateToTagRelation;
-import com.epam.esm.dao.model.Tag;
+import com.epam.esm.dao.model.CertificateToTagRelationId;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ import java.util.Optional;
 /**
  * DAO for CertificateToTagRelation entity
  */
-public interface CertificateAndTagDao {
+public interface CertificateAndTagRelatonRepository extends JpaRepository<CertificateToTagRelation, CertificateToTagRelationId> {
 
 
     /**
@@ -19,7 +20,7 @@ public interface CertificateAndTagDao {
      * @param certificateId id of certificate, by which tags are searched
      * @return list of tags, which are included in certificate
      */
-    List<Tag> findTagsByCertificate(Long certificateId);
+    List<CertificateToTagRelation> findTagsByCertificateId(Long certificateId);
 
 
     /**
@@ -28,7 +29,7 @@ public interface CertificateAndTagDao {
      * @param tagId id of tag, by which certificates are searched
      * @return list of certificates, which are contains such tag
      */
-    List<Certificate> findCertificatesByTags(Long tagId);
+    List<Certificate> findCertificatesByTagId(Long tagId);
 
     /**
      * Remove entity with such id in database
@@ -37,15 +38,8 @@ public interface CertificateAndTagDao {
      * @param certificateId value of field certificate's Id in removable entity
      * @return true, if successful deletion, else false
      */
-    boolean remove(Long tagId, Long certificateId);
+    boolean deleteByTagIdAndCertificateId(Long tagId, Long certificateId);
 
-    /**
-     * Create new entity in database
-     *
-     * @param entity CertificateAnsTag entity for creating
-     * @return created entity from database
-     */
-    CertificateToTagRelation create(CertificateToTagRelation entity);
 
     /**
      * Get entity by it's tag_id and certificate_id from database
@@ -54,5 +48,5 @@ public interface CertificateAndTagDao {
      * @param tagId         value of field tag's Id in needed entity
      * @return return needed entity
      */
-    Optional<CertificateToTagRelation> findByTagAndCertificate(Long certificateId, Long tagId);
+    Optional<CertificateToTagRelation> findByTagIdAndCertificateId(Long certificateId, Long tagId);
 }

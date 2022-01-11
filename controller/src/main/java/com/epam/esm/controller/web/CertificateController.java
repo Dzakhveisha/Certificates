@@ -8,6 +8,7 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.model.dto.CertificateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/certificates")
+@RequestMapping("/certificates")
 @Validated
 public class CertificateController {
 
@@ -35,6 +36,7 @@ public class CertificateController {
     private final CriteriaLinker<CertificateDto> certificateDtoLinker;
 
     @GetMapping
+    @PreAuthorize("permitAll()")
     public PageOfEntities<CertificateDto> getCertificates(@RequestParam(name = "tagName", required = false) Set<String> tagNames,
                                                           @RequestParam(defaultValue = "", name = "partName", required = false) String partName,
                                                           @RequestParam(defaultValue = "id", name = "sortBy", required = false) String sortBy,
@@ -50,6 +52,7 @@ public class CertificateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CertificateDto createCertificate(@Valid @RequestBody CertificateDto certificate) {
         CertificateDto createdCertificate = certificateService.create(certificate);
         certificateDtoLinker.addLinks(createdCertificate);
@@ -57,6 +60,7 @@ public class CertificateController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public CertificateDto getCertificate(@PathVariable Long id) {
         CertificateDto certificate = certificateService.findById(id);
         certificateDtoLinker.addLinks(certificate);
@@ -65,11 +69,13 @@ public class CertificateController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteCertificate(@PathVariable Long id) {
         certificateService.remove(id);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public CertificateDto updateCertificate(@PathVariable Long id,
                                             @RequestBody CertificateDto certificate) {
         CertificateDto updatedCertificate = certificateService.update(id, certificate);
